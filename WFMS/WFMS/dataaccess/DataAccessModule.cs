@@ -31,14 +31,15 @@ namespace WFMS.dataaccess
                 com.ExecuteNonQuery();
                 com.Dispose();
                 con.Close();
+                flag = true;
             }
-            catch (Exception ex)
+            catch
             {
                 flag = false;
             }
             finally 
             {
-                flag = true;
+
             }
             return flag;
         }
