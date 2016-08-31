@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WFMS</RootNamespace>
     <AssemblyName>WFMS</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,6 +47,18 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="wrkcal\client\frmDayType.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wrkcal\client\frmDayType.Designer.cs">
+      <DependentUpon>frmDayType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="wrkcal\client\frmWorkTimeLines.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wrkcal\client\frmWorkTimeLines.Designer.cs">
+      <DependentUpon>frmWorkTimeLines.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -54,7 +67,14 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="wrkcal\client\frmDayType.resx">
+      <DependentUpon>frmDayType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wrkcal\client\frmWorkTimeLines.resx">
+      <DependentUpon>frmWorkTimeLines.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -66,7 +86,34 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="cmpny\businesslogic\" />
+    <Folder Include="cmpny\client\" />
+    <Folder Include="cmpny\database\" />
+    <Folder Include="cstmr\businesslogic\" />
+    <Folder Include="cstmr\client\" />
+    <Folder Include="cstmr\database\" />
+    <Folder Include="emply\businesslogic\" />
+    <Folder Include="emply\client\" />
+    <Folder Include="emply\database\" />
+    <Folder Include="invic\businesslogic\" />
+    <Folder Include="invic\client\" />
+    <Folder Include="invic\database\" />
+    <Folder Include="job\businesslogic\" />
+    <Folder Include="job\client\" />
+    <Folder Include="job\database\" />
+    <Folder Include="objct\businesslogic\" />
+    <Folder Include="objct\client\" />
+    <Folder Include="objct\database\" />
+    <Folder Include="paymnt\businesslogic\" />
+    <Folder Include="paymnt\client\" />
+    <Folder Include="paymnt\database\" />
+    <Folder Include="wrkcal\businesslogic\" />
+    <Folder Include="wrkcal\database\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
