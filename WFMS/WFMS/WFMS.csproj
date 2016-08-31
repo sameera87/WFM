@@ -34,7 +34,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,8 +47,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="dataaccess\DataAccessModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="wrkcal\businesslogic\DayTypes.cs" />
     <Compile Include="wrkcal\client\frmDayType.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,7 +116,6 @@
     <Folder Include="paymnt\businesslogic\" />
     <Folder Include="paymnt\client\" />
     <Folder Include="paymnt\database\" />
-    <Folder Include="wrkcal\businesslogic\" />
     <Folder Include="wrkcal\database\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

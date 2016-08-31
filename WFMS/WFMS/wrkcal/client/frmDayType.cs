@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WFMS.wrkcal.businesslogic;
 
 namespace WFMS.wrkcal.client
 {
@@ -15,6 +16,18 @@ namespace WFMS.wrkcal.client
         public frmDayType()
         {
             InitializeComponent();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            if (new DayType(txtDayTypeID.Text, txtDayTypeDesc.Text).insertDayType())
+            {
+                MessageBox.Show("New Day Type Added.");
+            }
+            else
+            {
+                MessageBox.Show("Error in Transaction");
+            }
         }
     }
 }

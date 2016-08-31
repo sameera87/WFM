@@ -1,1 +1,10 @@
 E:\Projects\WFM\trunk\WFMS\WFMS\bin\Debug\WFMS.exe.config
+D:\My Documents\WFMS\trunk\WFMS\WFMS\bin\Debug\WFMS.exe.config
+D:\My Documents\WFMS\trunk\WFMS\WFMS\bin\Debug\WFMS.exe
+D:\My Documents\WFMS\trunk\WFMS\WFMS\bin\Debug\WFMS.pdb
+D:\My Documents\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.Properties.Resources.resources
+D:\My Documents\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.wrkcal.client.frmDayType.resources
+D:\My Documents\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.wrkcal.client.frmWorkTimeLines.resources
+D:\My Documents\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.csproj.GenerateResource.Cache
+D:\My Documents\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.exe
+D:\My Documents\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.pdb

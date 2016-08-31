@@ -19,11 +19,11 @@ create or replace package DAY_TYPES is
     d_type_desc DAY_TYPES_TAB.DAY_TYPE_DESCRIPTION%TYPE);
     
   --Query for all day types
-  PROCEDURE queryAllDayTypes;
+  --PROCEDURE queryAllDayTypes;
   
   --Query for a day type by day_type_id
-  FUNCTION queryDayType(
-    d_type DAY_TYPES_TAB.DAY_TYPE_ID%TYPE);
+  --FUNCTION queryDayType(
+    --d_type DAY_TYPES_TAB.DAY_TYPE_ID%TYPE);
 
 end DAY_TYPES;
 /
@@ -34,15 +34,16 @@ PROCEDURE addDayType(
   d_type_desc DAY_TYPES_TAB.DAY_TYPE_DESCRIPTION%TYPE)
 IS
 BEGIN
-  INSERT INTO DAY_TYPES_TAB(DAY_TYPE_ID,DAY_TYPE_DESCRIPTION)
-  VALUES (d_type, d_type_desc)
+  INSERT INTO DAY_TYPES_TAB(DAY_TYPE_ID,DAY_TYPE_DESCRIPTION) VALUES (d_type, d_type_desc);
+  COMMIT;
+  
 END addDayType;
   
 PROCEDURE removeDayType(
   d_type DAY_TYPES_TAB.DAY_TYPE_ID%TYPE)
 IS
 BEGIN
-  DELETE FROM DAY_TYPES_TAB WHERE DAY_TYPE_ID=d_type
+  DELETE FROM DAY_TYPES_TAB WHERE DAY_TYPE_ID=d_type;
 END removeDayType;
 
 PROCEDURE updateDayType(
@@ -51,16 +52,9 @@ PROCEDURE updateDayType(
 IS
 BEGIN
   UPDATE DAY_TYPES_TAB SET DAY_TYPE_DESCRIPTION=d_type_desc
-  WHERE DAY_TYPE_ID=d_type
+  WHERE DAY_TYPE_ID=d_type;
   
-END updateDayType;
-
-PROCEDURE queryAllDayTypes
-IS
-BEGIN
-  SELECT DAY_TYPE_ID, DAY_TYPE_DESCRIPTION FROM DAY_TYPES_TAB
-  
-END queryAllDayTypes;     
+END updateDayType;  
   
 end DAY_TYPES;
 /
