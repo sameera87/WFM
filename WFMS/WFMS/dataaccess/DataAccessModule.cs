@@ -4,36 +4,49 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
-using System.Data.OracleClient;
 using System.Configuration;
+using Oracle.ManagedDataAccess.Client;
 
 
 namespace WFMS.dataaccess
 {
     class DataAccessModule
     {
+        private OracleConnection connection;
+        private static string server;
+        private static string uid;
+        private static string password;
+
         private string getConnection()
         {
-            return ConfigurationManager.ConnectionStrings["OracleConnectionString"].ToString();
+            server = "13.76.35.247";
+            uid = "system";
+            password = "admin";
+            string connectionString;
+            return connectionString = "User Id=" + uid + ";Password=" + password + ";Data Source=" + server;
         }
-
+        
+        
         public bool executeNonQuery(string query)
         {
             bool flag = false;
-            OracleConnection con = null;
-            OracleCommand com = null;
+            OracleConnection connection = null;
+            OracleCommand command = null;
 
             try
             {
-                con = new OracleConnection(this.getConnection());
-                con.Open();
-                com = new OracleCommand(query, con);
-                com.ExecuteNonQuery();
-                com.Dispose();
-                con.Close();
+                connection = new OracleConnection(this.getConnection());
+                connection.Open();
+                command = new OracleCommand(query,connection);
+                command.BindByName = true;
+                command.CommandType = CommandType.StoredProcedure;
+                command.ExecuteNonQuery();
                 flag = true;
+
+                command.Dispose();
+                connection.Close();                
             }
-            catch
+            catch (Exception ex)
             {
                 flag = false;
             }
@@ -44,18 +57,14 @@ namespace WFMS.dataaccess
             return flag;
         }
 
-        public OracleDataReader executequery(string query)
+        /*public OracleDataReader executequery(string query)
         {
-            OracleConnection con = null;
-            OracleCommand com = null;
-
+            DBConnect.GetConnection();
             try
             {
-                con = new OracleConnection(this.getConnection());
-                con.Open();
-                com = new OracleCommand(query, con);
+                OracleCommand command = new OracleCommand(query, DBConnect.connection);
 
-                return com.ExecuteReader(CommandBehavior.CloseConnection);
+                return command.ExecuteReader(CommandBehavior.CloseConnection);
             }
             catch
             {
@@ -63,8 +72,8 @@ namespace WFMS.dataaccess
             }
             finally
             {
-                com.Dispose();
+
             }
-        }
+        }*/
     }
 }

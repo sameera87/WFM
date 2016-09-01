@@ -51,7 +51,7 @@ namespace WFMS.wrkcal.businesslogic
 
         public bool insertDayType()
         {
-            string query = "EXECUTE DAY_TYPES.addDayType(d_type => '"+this.dayTypeID+"', d_type_desc => '"+this.dayTypeDescription+"')";
+            string query = "DAY_TYPES.addDayType(d_type => '"+this.dayTypeID+"', d_type_desc => '"+this.dayTypeDescription+"')";
             return new DataAccessModule().executeNonQuery(query);
         }
     }
