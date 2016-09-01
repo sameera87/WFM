@@ -16,3 +16,4 @@ E:\Projects\WFM\trunk\WFMS\WFMS\obj\Debug\WFMS.wrkcal.client.frmWorkTimeLines.re
 E:\Projects\WFM\trunk\WFMS\WFMS\obj\Debug\WFMS.csproj.GenerateResource.Cache
 E:\Projects\WFM\trunk\WFMS\WFMS\obj\Debug\WFMS.exe
 E:\Projects\WFM\trunk\WFMS\WFMS\obj\Debug\WFMS.pdb
+E:\Projects\WFM\trunk\WFMS\WFMS\obj\Debug\WFMS.csprojResolveAssemblyReference.cache
