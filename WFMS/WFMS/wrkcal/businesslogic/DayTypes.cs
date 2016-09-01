@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.OracleClient;
-using WFMS.dataaccess;
 
 namespace WFMS.wrkcal.businesslogic
 {
@@ -47,12 +46,6 @@ namespace WFMS.wrkcal.businesslogic
             this.dayTypeID = did;
             this.dayTypeDescription = ddsec;
             this.workTimePerDay = wtpd;
-        }
-
-        public bool insertDayType()
-        {
-            string query = "DAY_TYPES.addDayType(d_type => '"+this.dayTypeID+"', d_type_desc => '"+this.dayTypeDescription+"')";
-            return new DataAccessModule().executeNonQuery(query);
         }
     }
 }

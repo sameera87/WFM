@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="dataaccess\DataAccessModule.cs" />
+    <Compile Include="dataaccess\DbConnect.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="wrkcal\businesslogic\DayTypes.cs" />

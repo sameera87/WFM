@@ -19,3 +19,4 @@ E:\Projects\WFM\trunk\WFMS\WFMS\obj\Debug\WFMS.pdb
 E:\Projects\WFM\trunk\WFMS\WFMS\obj\Debug\WFMS.csprojResolveAssemblyReference.cache
 D:\My Documents\WFMS\trunk\WFMS\WFMS\bin\Debug\Oracle.ManagedDataAccess.EntityFramework.dll
 D:\My Documents\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.csprojResolveAssemblyReference.cache
+E:\Projects\WFM\trunk\WFMS\WFMS\bin\Debug\Oracle.ManagedDataAccess.EntityFramework.dll

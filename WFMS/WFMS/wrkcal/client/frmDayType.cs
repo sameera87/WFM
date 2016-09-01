@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WFMS.wrkcal.businesslogic;
+using WFMS.dataaccess;
+using Oracle.ManagedDataAccess.Client;
 
 namespace WFMS.wrkcal.client
 {
@@ -20,14 +21,60 @@ namespace WFMS.wrkcal.client
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (new DayType(txtDayTypeID.Text, txtDayTypeDesc.Text).insertDayType())
+            if (txtDayTypeID.Text != null)
             {
-                MessageBox.Show("New Day Type Added.");
+                try
+                {
+                    DbConnect.OpenConnection();
+
+                    OracleCommand command = new OracleCommand("DAY_TYPES.addDayType",DbConnect.connection);
+                    command.BindByName = true;
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.Add("d_type", OracleDbType.Varchar2, txtDayTypeID.Text, ParameterDirection.Input);
+                    command.Parameters.Add("d_type_desc", OracleDbType.Varchar2, txtDayTypeDesc.Text, ParameterDirection.Input);
+
+                    if (command.ExecuteNonQuery() != 0)
+                    {
+                        MessageBox.Show("Successfully added the emplyee.");
+                        txtDayTypeID.Enabled = false;
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                finally 
+                {
+                    if (DbConnect.connection.State == ConnectionState.Open)
+                    {
+                        DbConnect.connection.Close();
+                    }
+                }
             }
             else
             {
                 MessageBox.Show("Error in Transaction");
             }
+        }
+
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            txtDayTypeID.Clear();
+            txtDayTypeDesc.Clear();
+            txtWorkTimeCalendar.Clear();
+            
+            txtDayTypeID.Enabled = true;
+            txtDayTypeDesc.Enabled = true;
+            txtDayTypeID.Focus();
+
+            btnSave.Enabled = true;
+        }
+
+        private void frmDayType_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
