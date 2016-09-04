@@ -21,7 +21,7 @@ namespace WFMS.wrkcal.client
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (txtDayTypeID.Text != null)
+            if (cmbDayTypeID.Text != null && cmbDayTypeID.Enabled==true)
             {
                 try
                 {
@@ -30,14 +30,13 @@ namespace WFMS.wrkcal.client
                     OracleCommand command = new OracleCommand("DAY_TYPES.addDayType",DbConnect.connection);
                     command.BindByName = true;
                     command.CommandType = CommandType.StoredProcedure;
-
-                    command.Parameters.Add("d_type", OracleDbType.Varchar2, txtDayTypeID.Text, ParameterDirection.Input);
+                    command.Parameters.Add("d_type", OracleDbType.Varchar2, cmbDayTypeID.Text, ParameterDirection.Input);
                     command.Parameters.Add("d_type_desc", OracleDbType.Varchar2, txtDayTypeDesc.Text, ParameterDirection.Input);
 
                     if (command.ExecuteNonQuery() != 0)
                     {
-                        MessageBox.Show("Successfully added the emplyee.");
-                        txtDayTypeID.Enabled = false;
+                        MessageBox.Show("Successfully added the Day Type.");
+                        cmbDayTypeID.Enabled = false;
                     }
                 }
 
@@ -53,6 +52,38 @@ namespace WFMS.wrkcal.client
                     }
                 }
             }
+
+            else if (cmbDayTypeID.Text != null && cmbDayTypeID.Enabled==false) //To Update any changes done for the Day Type
+            {
+                try
+                {
+                    DbConnect.OpenConnection();
+
+                    OracleCommand command = new OracleCommand("DAY_TYPES.updateDayType", DbConnect.connection);
+                    command.BindByName = true;
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("d_type", OracleDbType.Varchar2, cmbDayTypeID.Text, ParameterDirection.Input);
+                    command.Parameters.Add("d_type_desc", OracleDbType.Varchar2, txtDayTypeDesc.Text, ParameterDirection.Input);
+
+                    if (command.ExecuteNonQuery() != 0)
+                    {
+                        MessageBox.Show("Successfully updated the Day Type.");
+                        cmbDayTypeID.Enabled = false;
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                finally
+                {
+                    if (DbConnect.connection.State == ConnectionState.Open)
+                    {
+                        DbConnect.connection.Close();
+                    }
+                }
+            }
             else
             {
                 MessageBox.Show("Error in Transaction");
@@ -61,20 +92,55 @@ namespace WFMS.wrkcal.client
 
         private void btnNew_Click(object sender, EventArgs e)
         {
-            txtDayTypeID.Clear();
+            //cmbDayTypeID.Clear();
             txtDayTypeDesc.Clear();
             txtWorkTimeCalendar.Clear();
-            
-            txtDayTypeID.Enabled = true;
+
+            cmbDayTypeID.Enabled = true;
             txtDayTypeDesc.Enabled = true;
-            txtDayTypeID.Focus();
+            cmbDayTypeID.Focus();
 
             btnSave.Enabled = true;
         }
 
-        private void frmDayType_Load(object sender, EventArgs e)
+        private void btnDelete_Click(object sender, EventArgs e)
         {
+            if (cmbDayTypeID.Text != null && cmbDayTypeID.Enabled == false)
+            {
+                try
+                {
+                    DbConnect.OpenConnection();
 
+                    OracleCommand command = new OracleCommand("DAY_TYPES.removeDayType", DbConnect.connection);
+                    command.BindByName = true;
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("d_type", OracleDbType.Varchar2, cmbDayTypeID.Text, ParameterDirection.Input);
+
+                    if (command.ExecuteNonQuery() != 0)
+                    {
+                        MessageBox.Show("Successfully deleted the Day Type.");
+                        cmbDayTypeID.Enabled = false;
+                        txtDayTypeDesc.Enabled = false;
+
+
+                        //cmbDayTypeID.Clear();
+                        txtDayTypeDesc.Clear();
+                        txtWorkTimeCalendar.Clear();
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                finally
+                {
+                    if (DbConnect.connection.State == ConnectionState.Open)
+                    {
+                        DbConnect.connection.Close();
+                    }
+                }
+            }
         }
     }
 }
