@@ -9,14 +9,22 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WFMS.dataaccess;
 using Oracle.ManagedDataAccess.Client;
+using WFMS.wrkcal.businesslogic;
 
 namespace WFMS.wrkcal.client
 {
-    public partial class frmDayType : Form
+    public partial class frmDayType : MetroFramework.Forms.MetroForm
     {
         public frmDayType()
         {
             InitializeComponent();
+        }
+
+        public void populateOneRecord(DayType dayTypeObj) 
+        {
+            cmbDayTypeID.Text = dayTypeObj.DayTypeID;
+            txtDayTypeDesc.Text = dayTypeObj.DayTypeDescription;
+            txtWorkTimeCalendar.Text = dayTypeObj.WorkTimePerDay.ToString();
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -25,31 +33,15 @@ namespace WFMS.wrkcal.client
             {
                 try
                 {
-                    DbConnect.OpenConnection();
+                    DayType dayTypeObj = new DayType(cmbDayTypeID.Text, txtDayTypeDesc.Text);
+                    dayTypeObj.addDayType(dayTypeObj);
 
-                    OracleCommand command = new OracleCommand("DAY_TYPES.addDayType",DbConnect.connection);
-                    command.BindByName = true;
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add("d_type", OracleDbType.Varchar2, cmbDayTypeID.Text, ParameterDirection.Input);
-                    command.Parameters.Add("d_type_desc", OracleDbType.Varchar2, txtDayTypeDesc.Text, ParameterDirection.Input);
-
-                    if (command.ExecuteNonQuery() != 0)
-                    {
-                        MessageBox.Show("Successfully added the Day Type.");
-                        cmbDayTypeID.Enabled = false;
-                    }
+                    cmbDayTypeID.Enabled = false;
                 }
 
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                }
-                finally 
-                {
-                    if (DbConnect.connection.State == ConnectionState.Open)
-                    {
-                        DbConnect.connection.Close();
-                    }
                 }
             }
 
@@ -57,31 +49,15 @@ namespace WFMS.wrkcal.client
             {
                 try
                 {
-                    DbConnect.OpenConnection();
+                    DayType dayTypeObj = new DayType(cmbDayTypeID.Text, txtDayTypeDesc.Text);
+                    dayTypeObj.updateDayType(dayTypeObj);
 
-                    OracleCommand command = new OracleCommand("DAY_TYPES.updateDayType", DbConnect.connection);
-                    command.BindByName = true;
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add("d_type", OracleDbType.Varchar2, cmbDayTypeID.Text, ParameterDirection.Input);
-                    command.Parameters.Add("d_type_desc", OracleDbType.Varchar2, txtDayTypeDesc.Text, ParameterDirection.Input);
-
-                    if (command.ExecuteNonQuery() != 0)
-                    {
-                        MessageBox.Show("Successfully updated the Day Type.");
-                        cmbDayTypeID.Enabled = false;
-                    }
+                    cmbDayTypeID.Enabled = false;
                 }
 
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                }
-                finally
-                {
-                    if (DbConnect.connection.State == ConnectionState.Open)
-                    {
-                        DbConnect.connection.Close();
-                    }
                 }
             }
             else
@@ -92,7 +68,7 @@ namespace WFMS.wrkcal.client
 
         private void btnNew_Click(object sender, EventArgs e)
         {
-            //cmbDayTypeID.Clear();
+            cmbDayTypeID.Items.Clear();
             txtDayTypeDesc.Clear();
             txtWorkTimeCalendar.Clear();
 
@@ -109,38 +85,28 @@ namespace WFMS.wrkcal.client
             {
                 try
                 {
-                    DbConnect.OpenConnection();
+                    DayType dayTypeObj = new DayType(cmbDayTypeID.Text, txtDayTypeDesc.Text);
+                    dayTypeObj.deleteDayType(dayTypeObj);
 
-                    OracleCommand command = new OracleCommand("DAY_TYPES.removeDayType", DbConnect.connection);
-                    command.BindByName = true;
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add("d_type", OracleDbType.Varchar2, cmbDayTypeID.Text, ParameterDirection.Input);
+                    cmbDayTypeID.Enabled = false;
+                    txtDayTypeDesc.Enabled = false;
 
-                    if (command.ExecuteNonQuery() != 0)
-                    {
-                        MessageBox.Show("Successfully deleted the Day Type.");
-                        cmbDayTypeID.Enabled = false;
-                        txtDayTypeDesc.Enabled = false;
-
-
-                        //cmbDayTypeID.Clear();
-                        txtDayTypeDesc.Clear();
-                        txtWorkTimeCalendar.Clear();
-                    }
+                    cmbDayTypeID.Items.Clear();
+                    txtDayTypeDesc.Clear();
+                    txtWorkTimeCalendar.Clear();
                 }
 
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
-                finally
-                {
-                    if (DbConnect.connection.State == ConnectionState.Open)
-                    {
-                        DbConnect.connection.Close();
-                    }
-                }
             }
+        }
+
+        private void btnQuery_Click(object sender, EventArgs e)
+        {
+            dlgSearchDialog sd = new dlgSearchDialog();
+            sd.Show();
         }
     }
 }

@@ -46,39 +46,35 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(34, 24);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(51, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 13);
+            this.label1.Size = new System.Drawing.Size(96, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Day Type ID";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(195, 24);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Location = new System.Drawing.Point(292, 37);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(109, 13);
+            this.label2.Size = new System.Drawing.Size(159, 20);
             this.label2.TabIndex = 2;
             this.label2.Text = "Day Type Description";
             // 
             // txtDayTypeDesc
             // 
             this.txtDayTypeDesc.Enabled = false;
-            this.txtDayTypeDesc.Location = new System.Drawing.Point(196, 50);
-            this.txtDayTypeDesc.Margin = new System.Windows.Forms.Padding(2);
+            this.txtDayTypeDesc.Location = new System.Drawing.Point(294, 77);
             this.txtDayTypeDesc.Multiline = true;
             this.txtDayTypeDesc.Name = "txtDayTypeDesc";
-            this.txtDayTypeDesc.Size = new System.Drawing.Size(252, 22);
+            this.txtDayTypeDesc.Size = new System.Drawing.Size(376, 32);
             this.txtDayTypeDesc.TabIndex = 3;
             // 
             // btnNew
             // 
-            this.btnNew.Location = new System.Drawing.Point(37, 404);
-            this.btnNew.Margin = new System.Windows.Forms.Padding(2);
+            this.btnNew.Location = new System.Drawing.Point(56, 622);
             this.btnNew.Name = "btnNew";
-            this.btnNew.Size = new System.Drawing.Size(56, 19);
+            this.btnNew.Size = new System.Drawing.Size(84, 29);
             this.btnNew.TabIndex = 4;
             this.btnNew.Text = "New";
             this.btnNew.UseVisualStyleBackColor = true;
@@ -87,10 +83,9 @@
             // btnSave
             // 
             this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(112, 404);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSave.Location = new System.Drawing.Point(168, 622);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(56, 19);
+            this.btnSave.Size = new System.Drawing.Size(84, 29);
             this.btnSave.TabIndex = 5;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -99,51 +94,58 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(485, 24);
+            this.label3.Location = new System.Drawing.Point(728, 37);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(100, 13);
+            this.label3.Size = new System.Drawing.Size(144, 20);
             this.label3.TabIndex = 6;
             this.label3.Text = "Work Time Per Day";
             // 
             // txtWorkTimeCalendar
             // 
-            this.txtWorkTimeCalendar.Location = new System.Drawing.Point(485, 50);
+            this.txtWorkTimeCalendar.Location = new System.Drawing.Point(728, 77);
+            this.txtWorkTimeCalendar.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtWorkTimeCalendar.Name = "txtWorkTimeCalendar";
             this.txtWorkTimeCalendar.ReadOnly = true;
-            this.txtWorkTimeCalendar.Size = new System.Drawing.Size(115, 20);
+            this.txtWorkTimeCalendar.Size = new System.Drawing.Size(170, 26);
             this.txtWorkTimeCalendar.TabIndex = 7;
             // 
             // dgvWorkTimeLines
             // 
             this.dgvWorkTimeLines.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvWorkTimeLines.Location = new System.Drawing.Point(37, 95);
+            this.dgvWorkTimeLines.Location = new System.Drawing.Point(56, 146);
+            this.dgvWorkTimeLines.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvWorkTimeLines.Name = "dgvWorkTimeLines";
-            this.dgvWorkTimeLines.Size = new System.Drawing.Size(749, 285);
+            this.dgvWorkTimeLines.Size = new System.Drawing.Size(1124, 438);
             this.dgvWorkTimeLines.TabIndex = 8;
             // 
             // btnPopulate
             // 
-            this.btnPopulate.Location = new System.Drawing.Point(196, 402);
+            this.btnPopulate.Location = new System.Drawing.Point(294, 618);
+            this.btnPopulate.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnPopulate.Name = "btnPopulate";
-            this.btnPopulate.Size = new System.Drawing.Size(75, 23);
+            this.btnPopulate.Size = new System.Drawing.Size(112, 35);
             this.btnPopulate.TabIndex = 9;
             this.btnPopulate.Text = "Populate";
             this.btnPopulate.UseVisualStyleBackColor = true;
             // 
             // btnQuery
             // 
-            this.btnQuery.Location = new System.Drawing.Point(292, 402);
+            this.btnQuery.Location = new System.Drawing.Point(438, 618);
+            this.btnQuery.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnQuery.Name = "btnQuery";
-            this.btnQuery.Size = new System.Drawing.Size(75, 23);
+            this.btnQuery.Size = new System.Drawing.Size(112, 35);
             this.btnQuery.TabIndex = 10;
             this.btnQuery.Text = "Search";
             this.btnQuery.UseVisualStyleBackColor = true;
+            this.btnQuery.Click += new System.EventHandler(this.btnQuery_Click);
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(391, 402);
+            this.btnDelete.Location = new System.Drawing.Point(586, 618);
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(75, 23);
+            this.btnDelete.Size = new System.Drawing.Size(112, 35);
             this.btnDelete.TabIndex = 11;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
@@ -153,16 +155,17 @@
             // 
             this.cmbDayTypeID.Enabled = false;
             this.cmbDayTypeID.FormattingEnabled = true;
-            this.cmbDayTypeID.Location = new System.Drawing.Point(37, 50);
+            this.cmbDayTypeID.Location = new System.Drawing.Point(56, 77);
+            this.cmbDayTypeID.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cmbDayTypeID.Name = "cmbDayTypeID";
-            this.cmbDayTypeID.Size = new System.Drawing.Size(121, 21);
+            this.cmbDayTypeID.Size = new System.Drawing.Size(180, 28);
             this.cmbDayTypeID.TabIndex = 12;
             // 
             // frmDayType
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(831, 467);
+            this.ClientSize = new System.Drawing.Size(1246, 718);
             this.Controls.Add(this.cmbDayTypeID);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnQuery);
@@ -175,6 +178,7 @@
             this.Controls.Add(this.txtDayTypeDesc);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "frmDayType";
             this.Text = "frmDayType";
             ((System.ComponentModel.ISupportInitialize)(this.dgvWorkTimeLines)).EndInit();

@@ -54,9 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="wrkcal\businesslogic\DayTypes.cs" />
     <Compile Include="wrkcal\businesslogic\WorkTimeLine.cs" />
-    <Compile Include="wrkcal\client\frmDayType.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="wrkcal\client\frmDayType.cs" />
     <Compile Include="wrkcal\client\frmDayType.Designer.cs">
       <DependentUpon>frmDayType.cs</DependentUpon>
     </Compile>
@@ -101,6 +99,8 @@
     <Folder Include="cmpny\businesslogic\" />
     <Folder Include="cmpny\client\" />
     <Folder Include="cmpny\database\" />
+    <Folder Include="common\controls\" />
+    <Folder Include="common\errorhandling\" />
     <Folder Include="cstmr\businesslogic\" />
     <Folder Include="cstmr\client\" />
     <Folder Include="cstmr\database\" />
@@ -120,6 +120,12 @@
     <Folder Include="paymnt\client\" />
     <Folder Include="paymnt\database\" />
     <Folder Include="wrkcal\database\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\swimlk\OneDrive - IFS\Downloads\metroframework-modern-ui-master\metroframework-modern-ui-master\MetroFramework\MetroFramework.csproj">
+      <Project>{bb41ac8b-cbed-4387-a7e0-4567edb3f57f}</Project>
+      <Name>MetroFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

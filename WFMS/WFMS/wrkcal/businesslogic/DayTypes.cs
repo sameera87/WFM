@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.OracleClient;
+using System.Windows.Forms;
+using WFMS.dataaccess;
+using Oracle.ManagedDataAccess.Client;
+using WFMS.wrkcal.businesslogic;
+using System.Data.SqlClient;
 
 namespace WFMS.wrkcal.businesslogic
 {
-    class DayType
+    public class DayType
     {
         private string dayTypeID;
         private string dayTypeDescription;
@@ -46,6 +53,82 @@ namespace WFMS.wrkcal.businesslogic
             this.dayTypeID = did;
             this.dayTypeDescription = ddsec;
             this.workTimePerDay = wtpd;
+        }
+
+        public bool addDayType(DayType dayTypeObj) 
+        {
+            if (dayTypeObj.dayTypeID != null)
+            {
+                DbConnect.OpenConnection();
+
+                OracleCommand command = new OracleCommand("DAY_TYPES.addDayType", DbConnect.connection);
+                command.BindByName = true;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("d_type", OracleDbType.Varchar2, dayTypeObj.dayTypeID, ParameterDirection.Input);
+                command.Parameters.Add("d_type_desc", OracleDbType.Varchar2, dayTypeObj.dayTypeDescription, ParameterDirection.Input);
+                command.ExecuteNonQuery();
+
+                if (DbConnect.connection.State == ConnectionState.Open)
+                {
+                    DbConnect.connection.Close();
+                }
+
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
+        public bool updateDayType(DayType dayTypeObj) 
+        {
+            if (dayTypeObj.dayTypeID != null)
+            {
+                DbConnect.OpenConnection();
+
+                OracleCommand command = new OracleCommand("DAY_TYPES.updateDayType", DbConnect.connection);
+                command.BindByName = true;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("d_type", OracleDbType.Varchar2, dayTypeObj.dayTypeID, ParameterDirection.Input);
+                command.Parameters.Add("d_type_desc", OracleDbType.Varchar2, dayTypeObj.dayTypeDescription, ParameterDirection.Input);
+                command.ExecuteNonQuery();
+
+                if (DbConnect.connection.State == ConnectionState.Open)
+                {
+                    DbConnect.connection.Close();
+                }
+
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
+        public bool deleteDayType(DayType dayTypeObj) 
+        {
+            if (dayTypeObj.dayTypeID != null)
+            {
+                DbConnect.OpenConnection();
+
+                OracleCommand command = new OracleCommand("DAY_TYPES.removeDayType", DbConnect.connection);
+                command.BindByName = true;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("d_type", OracleDbType.Varchar2, dayTypeObj.dayTypeID, ParameterDirection.Input);
+                command.ExecuteNonQuery();
+
+                if (DbConnect.connection.State == ConnectionState.Open)
+                {
+                    DbConnect.connection.Close();
+                }
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
         }
     }
 }

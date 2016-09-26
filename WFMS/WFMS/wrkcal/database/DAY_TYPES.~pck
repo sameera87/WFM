@@ -18,13 +18,10 @@ create or replace package DAY_TYPES is
     d_type DAY_TYPES_TAB.DAY_TYPE_ID%TYPE,
     d_type_desc DAY_TYPES_TAB.DAY_TYPE_DESCRIPTION%TYPE);
     
-  --Search for all day types
-PROCEDURE getDayTypeDetails(
-   d_type_          IN  DAY_TYPES_TAB.DAY_TYPE_ID%TYPE,
-   d_type_desc_     OUT DAY_TYPES_TAB.DAY_TYPE_DESCRIPTION%TYPE);
+  --Query for all day types
+  --PROCEDURE queryAllDayTypes;
   
-   --work_time_p_day_ OUT DAY_TYPES_TAB.WORK_TIME_PER_DAY%TYPE 
- --Query for a day type by day_type_id
+  --Query for a day type by day_type_id
   --FUNCTION queryDayType(
     --d_type DAY_TYPES_TAB.DAY_TYPE_ID%TYPE);
 
@@ -47,38 +44,17 @@ PROCEDURE removeDayType(
 IS
 BEGIN
   DELETE FROM DAY_TYPES_TAB WHERE DAY_TYPE_ID=d_type;
-  COMMIT;
 END removeDayType;
 
 PROCEDURE updateDayType(
-    d_type       DAY_TYPES_TAB.DAY_TYPE_ID%TYPE,
-    d_type_desc  DAY_TYPES_TAB.DAY_TYPE_DESCRIPTION%TYPE)
+    d_type DAY_TYPES_TAB.DAY_TYPE_ID%TYPE,
+    d_type_desc DAY_TYPES_TAB.DAY_TYPE_DESCRIPTION%TYPE)
 IS
 BEGIN
   UPDATE DAY_TYPES_TAB SET DAY_TYPE_DESCRIPTION=d_type_desc
   WHERE DAY_TYPE_ID=d_type;
-  COMMIT;
   
-END updateDayType;
-
-
-  --Search for all day types
-PROCEDURE getDayTypeDetails(
-   d_type_          IN  DAY_TYPES_TAB.DAY_TYPE_ID%TYPE,
-   d_type_desc_     OUT DAY_TYPES_TAB.DAY_TYPE_DESCRIPTION%TYPE)
-IS
-  CURSOR getDetails IS
-  SELECT day_type_description --,  work_time_per_day
-  FROM   DAY_TYPES_TAB
-  WHERE  day_type_id = d_type_;
+END updateDayType;  
   
-BEGIN
-  OPEN getDetails;
-  FETCH getDetails INTO d_type_desc_;
-  --, work_time_p_day_;
-  CLOSE getDetails;
-END getDayTypeDetails;
-
-
 end DAY_TYPES;
 /
