@@ -49,21 +49,51 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\Client_SYS.cs" />
+    <Compile Include="common\dlgSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="common\dlgSearch.Designer.cs">
+      <DependentUpon>dlgSearch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="common\frmMasterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="common\frmMasterForm.Designer.cs">
+      <DependentUpon>frmMasterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="common\WFMS_cmb.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="common\WFMS_date.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="common\WFMS_dlgTxt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="common\WFMS_rdo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="common\WFMS_txt.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="dataaccess\DbConnect.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="wrkcal\businesslogic\DayTypes.cs" />
     <Compile Include="wrkcal\businesslogic\WorkTimeLine.cs" />
-    <Compile Include="wrkcal\client\frmDayType.cs" />
+    <Compile Include="wrkcal\client\frmDayType.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="wrkcal\client\frmDayType.Designer.cs">
       <DependentUpon>frmDayType.cs</DependentUpon>
     </Compile>
-    <Compile Include="wrkcal\client\SearchDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="wrkcal\client\SearchDialog.Designer.cs">
-      <DependentUpon>SearchDialog.cs</DependentUpon>
-    </Compile>
+    <EmbeddedResource Include="common\dlgSearch.resx">
+      <DependentUpon>dlgSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="common\frmMasterForm.resx">
+      <DependentUpon>frmMasterForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -76,9 +106,6 @@
     </Compile>
     <EmbeddedResource Include="wrkcal\client\frmDayType.resx">
       <DependentUpon>frmDayType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wrkcal\client\SearchDialog.resx">
-      <DependentUpon>SearchDialog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -99,8 +126,6 @@
     <Folder Include="cmpny\businesslogic\" />
     <Folder Include="cmpny\client\" />
     <Folder Include="cmpny\database\" />
-    <Folder Include="common\controls\" />
-    <Folder Include="common\errorhandling\" />
     <Folder Include="cstmr\businesslogic\" />
     <Folder Include="cstmr\client\" />
     <Folder Include="cstmr\database\" />
@@ -119,13 +144,108 @@
     <Folder Include="paymnt\businesslogic\" />
     <Folder Include="paymnt\client\" />
     <Folder Include="paymnt\database\" />
-    <Folder Include="wrkcal\database\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\swimlk\OneDrive - IFS\Downloads\metroframework-modern-ui-master\metroframework-modern-ui-master\MetroFramework\MetroFramework.csproj">
       <Project>{bb41ac8b-cbed-4387-a7e0-4567edb3f57f}</Project>
       <Name>MetroFramework</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Delete_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Delete_Disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Delete_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Delete_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LOV_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LOV_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LOV_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LOV_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\mark_deleted.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navigate_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navigate_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navigate_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navigate_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\new_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\new_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\new_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\new_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\populate_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\populate_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\populate_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\populate_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\search_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\search_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\search_normal.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

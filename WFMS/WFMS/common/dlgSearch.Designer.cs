@@ -1,6 +1,6 @@
-﻿namespace WFMS.wrkcal.client
+﻿namespace WFMS.common
 {
-    partial class frmDayType
+    partial class dlgSearch
     {
         /// <summary>
         /// Required designer variable.
@@ -28,21 +28,37 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.btnSearch = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // frmDayType
+            // btnSearch
+            // 
+            this.btnSearch.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.btnSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSearch.Location = new System.Drawing.Point(455, 390);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(112, 35);
+            this.btnSearch.TabIndex = 0;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // dlgSearch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1024, 768);
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "frmDayType";
-            this.Text = "Day Type";
+            this.ClientSize = new System.Drawing.Size(600, 450);
+            this.Controls.Add(this.btnSearch);
+            this.Name = "dlgSearch";
+            this.Text = "Search";
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Button btnSearch;
 
     }
 }
