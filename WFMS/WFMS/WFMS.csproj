@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3FE5F704-D5B1-4644-82F7-7C4358DF0030}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WFMS</RootNamespace>
+    <AssemblyName>WFMS</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MetroFramework">
+      <HintPath>..\..\DLL\MetroFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Design">
+      <HintPath>..\..\DLL\MetroFramework.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Fonts">
+      <HintPath>..\..\DLL\MetroFramework.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.121.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\DLL\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Classes\Client_SYS.cs" />
+    <Compile Include="Common\Classes\DbConnect.cs" />
+    <Compile Include="Common\Clients\dlgSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Common\Clients\dlgSearch.Designer.cs">
+      <DependentUpon>dlgSearch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Clients\frmMasterDetail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Common\Clients\frmMasterDetail.Designer.cs">
+      <DependentUpon>frmMasterDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Controls\WfmsCombo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Controls\WfmsDate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Controls\WfmsFormText.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Controls\WfmsRadio.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Controls\WfmsText.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Common\Clients\dlgSearch.resx">
+      <DependentUpon>dlgSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Clients\frmMasterDetail.resx">
+      <DependentUpon>frmMasterDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\Delete_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Delete_Disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Delete_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Delete_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LOV_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LOV_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LOV_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LOV_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\mark_deleted.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navigate_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navigate_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navigate_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navigate_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\new_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\new_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\new_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\new_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\populate_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\populate_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\populate_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\populate_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refresh_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save_disable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\search_click.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\search_focus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\search_normal.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

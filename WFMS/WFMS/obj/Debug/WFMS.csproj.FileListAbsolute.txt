@@ -1,0 +1,16 @@
+E:\Projects\WFMS_2013\WFMS\WFMS\bin\Debug\WFMS.exe.config
+E:\Projects\WFMS_2013\WFMS\WFMS\bin\Debug\WFMS.exe
+E:\Projects\WFMS_2013\WFMS\WFMS\bin\Debug\WFMS.pdb
+E:\Projects\WFMS_2013\WFMS\WFMS\bin\Debug\MetroFramework.Design.dll
+E:\Projects\WFMS_2013\WFMS\WFMS\bin\Debug\MetroFramework.dll
+E:\Projects\WFMS_2013\WFMS\WFMS\bin\Debug\MetroFramework.Fonts.dll
+E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.Common.Clients.dlgSearch.resources
+E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.Properties.Resources.resources
+E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.csproj.GenerateResource.Cache
+E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.exe
+E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.pdb
+E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.csprojResolveAssemblyReference.cache
+E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.Common.Clients.frmMasterDetail.resources
+E:\WFMS\trunk\WFMS\WFMS\bin\Debug\WFMS.exe.config
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.exe
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.pdb
