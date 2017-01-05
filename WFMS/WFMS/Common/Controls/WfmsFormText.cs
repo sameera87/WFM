@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace WFMS.Common.Controls
 {
-    class WfmsFormText : TextBox
+    public class WfmsFormText : TextBox
     {
         #region properties
 

@@ -29,23 +29,22 @@ namespace WFMS.Common.Classes
         //open connection to database
         public static bool OpenConnection()
         {
-            server = "13.76.35.247";
+            server = "13.76.35.247/xe";
             uid = "system";
             password = "admin";
             string connectionString;
-            connectionString = "User Id=" + uid + ";Password=" + password + ";Data Source=" + server;
+            connectionString = "Data Source=" + server + ";User Id=" + uid + ";Password=" + password;
 
-            connection = new OracleConnection();
-            connection.ConnectionString = "User Id=" + uid + ";Password=" + password + ";Data Source=" + server;
+            OracleConnection connection = new OracleConnection();
+            connection.ConnectionString = "Data Source=" + server + ";User Id=" + uid + ";Password=" + password;
 
             try
             {
                 connection.Open();
                 return true;
             }
-            catch (OracleException ex)
+            catch 
             {
-                MessageBox.Show(ex.Message);
                 return false;
             }
         }

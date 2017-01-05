@@ -9,11 +9,11 @@ using WFMS.Common.Clients;
 
 namespace WFMS.Common.Controls
 {
-    class WfmsCombo : MetroComboBox
+    public class WfmsCombo : MetroComboBox
     {
         public WfmsCombo()
         {
-            InitializeComponent();    
+            //InitializeComponent();    
             frmMasterDetail.ClickedPopulate += onClickedPopulate;
             frmMasterDetail.ClickedNew += onClickedNew;
         }

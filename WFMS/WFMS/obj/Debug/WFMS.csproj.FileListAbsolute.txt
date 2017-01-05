@@ -12,5 +12,17 @@ E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.pdb
 E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.csprojResolveAssemblyReference.cache
 E:\Projects\WFMS_2013\WFMS\WFMS\obj\Debug\WFMS.Common.Clients.frmMasterDetail.resources
 E:\WFMS\trunk\WFMS\WFMS\bin\Debug\WFMS.exe.config
+E:\WFMS\trunk\WFMS\WFMS\bin\Debug\WFMS.exe
+E:\WFMS\trunk\WFMS\WFMS\bin\Debug\WFMS.pdb
+E:\WFMS\trunk\WFMS\WFMS\bin\Debug\MetroFramework.Design.dll
+E:\WFMS\trunk\WFMS\WFMS\bin\Debug\MetroFramework.dll
+E:\WFMS\trunk\WFMS\WFMS\bin\Debug\MetroFramework.Fonts.dll
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.Common.Clients.dlgSearch.resources
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.Common.Clients.frmMasterDetail.resources
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.Employee.Clients.frmEmployee.resources
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.Employee.Clients.frmUser.resources
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.Properties.Resources.resources
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.csproj.GenerateResource.Cache
 E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.exe
 E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.pdb
+E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.csprojResolveAssemblyReference.cache

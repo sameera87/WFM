@@ -10,7 +10,7 @@ using WFMS.Common.Clients;
 
 namespace WFMS.Common.Controls
 {
-    class WfmsText : MetroTextBox
+    public class WfmsText : MetroTextBox
     {
         public WfmsText()
         {

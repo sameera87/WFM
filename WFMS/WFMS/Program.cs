@@ -16,7 +16,7 @@ namespace WFMS
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new WFMS.Common.Clients.frmMasterDetail());
+            Application.Run(new WFMS.Employee.Clients.frmUser());
         }
     }
 }

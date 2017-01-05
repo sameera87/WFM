@@ -8,7 +8,7 @@ using MetroFramework.Controls;
 
 namespace WFMS.Common.Controls
 {
-    class WfmsDate : MetroDateTime
+    public class WfmsDate : MetroDateTime
     {
         #region Properties
         private string SQL_COL = "";

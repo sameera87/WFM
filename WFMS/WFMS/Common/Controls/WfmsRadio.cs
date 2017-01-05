@@ -8,7 +8,7 @@ using MetroFramework.Controls;
 
 namespace WFMS.Common.Controls
 {
-    class WfmsRadio : MetroRadioButton
+    public class WfmsRadio : MetroRadioButton
     {
         private void InitializeComponent()
         {

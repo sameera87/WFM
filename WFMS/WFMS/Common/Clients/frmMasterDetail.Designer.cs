@@ -170,12 +170,11 @@
             // 
             this.wfmsComboRecordPopulate.BackColor = System.Drawing.Color.LightGray;
             this.wfmsComboRecordPopulate.Edited = false;
-            this.wfmsComboRecordPopulate.Enabled = false;
             this.wfmsComboRecordPopulate.ForeverDisable = false;
             this.wfmsComboRecordPopulate.FormattingEnabled = true;
             this.wfmsComboRecordPopulate.ItemHeight = 23;
             this.wfmsComboRecordPopulate.Location = new System.Drawing.Point(393, 27);
-            this.wfmsComboRecordPopulate.MainCMB = false;
+            this.wfmsComboRecordPopulate.MainCMB = true;
             this.wfmsComboRecordPopulate.Mand = false;
             this.wfmsComboRecordPopulate.Name = "wfmsComboRecordPopulate";
             this.wfmsComboRecordPopulate.Size = new System.Drawing.Size(599, 29);
@@ -198,6 +197,7 @@
             this.Controls.Add(this.btnNew);
             this.Controls.Add(this.btnPopulate);
             this.Controls.Add(this.wfmsComboRecordPopulate);
+            this.Movable = false;
             this.Name = "frmMasterDetail";
             this.Text = "frmMasterDetail";
             ((System.ComponentModel.ISupportInitialize)(this.btnPopulate)).EndInit();
@@ -214,15 +214,15 @@
 
         #endregion
 
-        private Controls.WfmsCombo wfmsComboRecordPopulate;
-        private System.Windows.Forms.PictureBox btnPopulate;
-        private System.Windows.Forms.PictureBox btnNew;
-        private System.Windows.Forms.PictureBox btnSave;
-        private System.Windows.Forms.PictureBox btnLov;
-        private System.Windows.Forms.PictureBox btnDelete;
-        private System.Windows.Forms.PictureBox btnZoom;
-        private System.Windows.Forms.PictureBox btnRefresh;
-        private System.Windows.Forms.PictureBox btnSearch;
-        private Controls.WfmsDate wfmsDate;
+        protected Controls.WfmsCombo wfmsComboRecordPopulate;
+        protected System.Windows.Forms.PictureBox btnPopulate;
+        protected System.Windows.Forms.PictureBox btnNew;
+        protected System.Windows.Forms.PictureBox btnSave;
+        protected System.Windows.Forms.PictureBox btnLov;
+        protected System.Windows.Forms.PictureBox btnDelete;
+        protected System.Windows.Forms.PictureBox btnZoom;
+        protected System.Windows.Forms.PictureBox btnRefresh;
+        protected System.Windows.Forms.PictureBox btnSearch;
+        protected Controls.WfmsDate wfmsDate;
     }
 }
