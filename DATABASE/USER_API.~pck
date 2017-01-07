@@ -32,11 +32,13 @@ create or replace package USER_API is
                  old_rec_ IN OUT USER_TAB%ROWTYPE,
                  rslt_    IN OUT VARCHAR2);
 
+  PROCEDURE Delete_(userid_ IN VARCHAR2, rslt_ IN OUT VARCHAR2);
+
   PROCEDURE Update_(attr_   OUT VARCHAR2,
                     newrec_ IN OUT NOCOPY USER_TAB%ROWTYPE,
                     rslt_   IN OUT VARCHAR2);
 
-  PROCEDURE Get_Part(firstName_    OUT VARCHAR2,
+  PROCEDURE Get_User(firstName_    OUT VARCHAR2,
                      lastName_     OUT VARCHAR2,
                      password_     OUT VARCHAR2,
                      userType_     OUT VARCHAR2,
@@ -46,7 +48,7 @@ create or replace package USER_API is
                      rslt_         OUT varchar2,
                      userid_       IN VARCHAR2);
 
-  FUNCTION Get_Uesr_Type(userid_ IN VARCHAR2) RETURN VARCHAR2;
+  FUNCTION Get_User_Type(userid_ IN VARCHAR2) RETURN VARCHAR2;
 
 end USER_API;
 /
@@ -116,9 +118,9 @@ create or replace package body USER_API is
       ELSIF name_ = 'USER_TYPE' THEN
         rec_.User_Type := value_;
       ELSIF name_ = 'CREATED_DATE' THEN
-        rec_.Created_Date := TO_DATE(value_, 'MM/DD/YYYY HH:MI:SS AM');
+        rec_.Created_Date := TO_DATE(value_, 'dd-MM-yyyy');
       ELSIF name_ = 'MODIFIED_DATE' THEN
-        rec_.Modified_Date := TO_DATE(value_, 'MM/DD/YYYY HH:MI:SS AM');
+        rec_.Modified_Date := TO_DATE(value_, 'dd-MM-yyyy');
       ELSIF name_ = 'ROWVERSION' THEN
         rec_.Rowversion := TO_DATE(value_, 'MM/DD/YYYY HH:MI:SS AM');
       ELSE
@@ -201,16 +203,13 @@ create or replace package body USER_API is
     System_API.Add_To_Attr('PASSWORD', rec_.password, attr_);
     System_API.Add_To_Attr('USER_TYPE', rec_.User_Type, attr_);
     System_API.Add_To_Attr('CREATED_DATE',
-                           to_char(rec_.Created_Date,
-                                   'YYYY/MM/DD HH:MI:SS AM'),
+                           to_char(rec_.Created_Date, 'dd-MM-yyyy'),
                            attr_);
     System_API.Add_To_Attr('MODIFIED_DATE',
-                           to_char(rec_.Modified_Date,
-                                   'YYYY/MM/DD HH:MI:SS AM'),
+                           to_char(rec_.Modified_Date, 'dd-MM-yyyy'),
                            attr_);
     System_API.Add_To_Attr('ROWVERSION',
-                           to_char(rec_.Rowversion,
-                                   'YYYY/MM/DD HH:MI:SS AM'),
+                           to_char(rec_.Rowversion, 'dd-MM-yyyy'),
                            attr_);
   
   END Pack_;
@@ -270,6 +269,29 @@ create or replace package body USER_API is
       rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
   END Get_;
 
+  PROCEDURE Delete_(userid_ IN VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_  USER_TAB%ROWTYPE;
+      
+  BEGIN
+    Check_Exist(userid_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Get_(userid_, rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        DELETE FROM USER_TAB where user_id = userid_;
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully deleted the user.';
+        END IF;
+      ELSE
+        rslt_ := 'Error: Employee record has deleted. Please refresh the window.';
+      END IF;
+    ELSE
+      rslt_ := 'Error: Cannot find the user with User ID - ' || userid_ || '.';
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Delete_;
+
   PROCEDURE Update_(attr_   OUT VARCHAR2,
                     newrec_ IN OUT NOCOPY USER_TAB%ROWTYPE,
                     rslt_   IN OUT VARCHAR2) IS
@@ -285,7 +307,7 @@ create or replace package body USER_API is
       rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
   END Update_;
 
-  PROCEDURE Get_Part(firstName_    OUT VARCHAR2,
+  PROCEDURE Get_User(firstName_    OUT VARCHAR2,
                      lastName_     OUT VARCHAR2,
                      password_     OUT VARCHAR2,
                      userType_     OUT VARCHAR2,
@@ -329,7 +351,7 @@ create or replace package body USER_API is
       rslt_ := 'No data found';
     WHEN others THEN
       rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
-  END Get_Part;
+  END Get_User;
 
   FUNCTION Get_User_Type(userid_ IN VARCHAR2) RETURN VARCHAR2 IS
   

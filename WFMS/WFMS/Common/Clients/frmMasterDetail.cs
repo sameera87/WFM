@@ -218,6 +218,7 @@ namespace WFMS.Common.Clients
             btnDelete_Disable();
             WfmsText.Entered += OnEntered;
             WfmsText.Left += OnLeft;
+            WfmsText.Text_Edited += OnEdited;
             //dlgSearch.SearchThis += OnSearch;
         }
 
@@ -233,6 +234,11 @@ namespace WFMS.Common.Clients
             btnLov_Disable();
             btnZoom_Disable();
             Zoomcol = "";
+        }
+
+        public void OnEdited(object source, EventArgs e)
+        {
+            btnSave_Enable();
         }
 
         #region button animations
@@ -268,12 +274,12 @@ namespace WFMS.Common.Clients
 
         private void btnSave_MouseLeave(object sender, EventArgs e)
         {
-            btnSave.Image = Properties.Resources.save_normal;
+            //btnSave.Image = Properties.Resources.save_disable;
         }
 
         private void btnSave_MouseUp(object sender, MouseEventArgs e)
         {
-            btnSave.Image = Properties.Resources.save_normal;
+           // btnSave.Image = Properties.Resources.save_normal;
         }
 
         private void btnLov_MouseDown(object sender, MouseEventArgs e)
@@ -328,12 +334,12 @@ namespace WFMS.Common.Clients
 
         private void btnZoom_MouseLeave(object sender, EventArgs e)
         {
-            btnZoom.Image = Properties.Resources.navigate_normal;
+            //btnZoom.Image = Properties.Resources.navigate_normal;
         }
 
         private void btnZoom_MouseUp(object sender, MouseEventArgs e)
         {
-            btnZoom.Image = Properties.Resources.navigate_focus;
+            //btnZoom.Image = Properties.Resources.navigate_focus;
         }
 
         private void btnRefresh_MouseDown(object sender, MouseEventArgs e)
@@ -388,12 +394,12 @@ namespace WFMS.Common.Clients
 
         private void btnNew_MouseLeave(object sender, EventArgs e)
         {
-            btnNew.Image = Properties.Resources.new_normal;
+            //btnNew.Image = Properties.Resources.new_normal;
         }
 
         private void btnNew_MouseUp(object sender, MouseEventArgs e)
         {
-            btnNew.Image = Properties.Resources.new_focus;
+            //btnNew.Image = Properties.Resources.new_focus;
         }
         #endregion
 
@@ -487,6 +493,11 @@ namespace WFMS.Common.Clients
         protected virtual void onClickedNew()
         {
             btnSave_Enable();
+            btnNew_Disable();
+            btnPopulate_Disable();
+            btnSearch_Disable();
+            btnDelete_Disable();
+            wfmsComboRecordPopulate.Enabled = false;
             if (ClickedNew != null)
                 ClickedNew(this, EventArgs.Empty);
         }
@@ -499,6 +510,8 @@ namespace WFMS.Common.Clients
 
         protected virtual void onClickedPopulate()
         {
+            #region Actions
+            wfmsComboRecordPopulate.Enabled = true;
             dt.Reset();
             if (MainCombo_col1 != null)
                 dt.Columns.Add(MainCombo_col1, typeof(String));
@@ -545,7 +558,11 @@ namespace WFMS.Common.Clients
             /////
             if (ClickedPopulate != null)
                 ClickedPopulate(this, dt);
-            btnSave_Enable();
+            btnSave_Disable();
+            btnDelete_Enable();
+            btnNew_Enable();
+            btnSearch_Enable();
+            #endregion
         }
 
         private void btnPopulate_Click(object sender, EventArgs e)
@@ -555,7 +572,7 @@ namespace WFMS.Common.Clients
             {
                 onClickedPopulate();
             }
-            DBevent = "U";
+            DBevent = "M";
             ClickedPopulated(this, EventArgs.Empty);
         }
 
@@ -567,12 +584,21 @@ namespace WFMS.Common.Clients
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            DBevent = "U";
+            btnSave_Disable();
+            btnPopulate_Enable();
+            btnNew_Enable();
+            btnSearch_Enable();
+            btnDelete_Enable();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
             DBevent = "D";
+            if (!String.IsNullOrEmpty(table_))
+            {
+                wfmsComboRecordPopulate.Items.Clear();
+                onClickedPopulate();
+            }
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -585,15 +611,17 @@ namespace WFMS.Common.Clients
 
             if (!String.IsNullOrEmpty(table_))
             {
+                wfmsComboRecordPopulate.Items.Clear();
                 onClickedPopulate();
             }
 
             //btnLov_Enable();
             //btnZoom_Enable();
-            btnRefresh_Enable();
-            btnSave_Enable();
+            //btnRefresh_Enable();
+            btnSave_Disable();
             ClickedPopulated(this, EventArgs.Empty);
-            //btnDelete_Enable();
+            btnDelete_Enable();
+
         }
 
     }

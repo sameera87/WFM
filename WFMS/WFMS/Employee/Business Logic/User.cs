@@ -55,7 +55,7 @@ namespace WFMS.Employee.Business_Logic
             {
                 DbConnect.OpenConnection();
                 /*********************Oracle Command**********************************************************************/
-                OracleCommand ora_cmd = new OracleCommand("USER_API.Get_", DbConnect.connection);
+                OracleCommand ora_cmd = new OracleCommand("USER_API.Get_User", DbConnect.connection);
                 ora_cmd.BindByName = true;
                 ora_cmd.CommandType = CommandType.StoredProcedure;
 

@@ -21,15 +21,12 @@ namespace WFMS.Employee.Clients
         {
             InitializeComponent();
             wfmsCmbUserType.SelectedIndex = 0;
-            SearchATTR = "USERID:VARCHAR2,FIRST_NAME:VARCHAR2,LAST_NAME:VARCHAR2,PASSWORD:VARCHAR2,USER_TYPE:VARCHAR2,CREATED_DATE:DATE,MODIFIED_DATE:DATE";
+            SearchATTR = "USER_ID:VARCHAR2,FIRST_NAME:VARCHAR2,LAST_NAME:VARCHAR2,PASSWORD:VARCHAR2,USER_TYPE:VARCHAR2";
         }
 
         private void btnNew_Click(object sender, EventArgs e)
         {
-            if (OKtoSave())
-            {
-                ClearForm();
-            }
+            ClearForm();
         }
 
         private void ClearForm()
@@ -39,23 +36,7 @@ namespace WFMS.Employee.Clients
             wfmsTxtFirstName.Text = "";
             wfmsTxtLastName.Text = "";
             wfmsCmbUserType.SelectedIndex = 0;
-        }
-
-        private bool OKtoSave()
-        {
-            if (!String.IsNullOrEmpty(wfmsTxtUserID.Text))
-            {
-                DialogResult = MessageBox.Show("Do you want to save your changes?", "Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                if (DialogResult == System.Windows.Forms.DialogResult.Cancel)
-                {
-                    return false;
-                }
-                else if (DialogResult == System.Windows.Forms.DialogResult.Yes)
-                {
-                    Save();
-                }
-            }
-            return true;
+            wfmsTxtPassword.Text = "";
         }
 
         private void Save()
@@ -64,15 +45,14 @@ namespace WFMS.Employee.Clients
             {
                 AddNew();
             }
-            else if (DBevent == "D")
-            {
-                //DeleteRec();
-            }
             else if (DBevent == "M")
             {
-                bool value = Validate();
+                //bool value = Validate();
                 //ModifyRec();
+                UpdateUser();
             }
+            wfmsComboRecordPopulate.Items.Clear();
+            onClickedPopulate();
         }
 
         private void AddNew()
@@ -101,12 +81,67 @@ namespace WFMS.Employee.Clients
                     {
                         String msg = ora_cmd.Parameters["rslt_"].Value.ToString();
                         MetroFramework.MetroMessageBox.Show(this, msg);
-                        if (msg.Substring(0, 5) == "Error")
+                        if (msg.Substring(0, 5) == "TRUE")
                         {
                             attr = ora_cmd.Parameters["attr_"].Value.ToString(); ;
                             if (attr != "null")
                                 userObj.Unpack_Attr(attr);
                             setObjectToFields();
+                        }
+                        else
+                            btnSave_Disable();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MetroFramework.MetroMessageBox.Show(this, "Error: " + ex.Message, "Application Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
+                finally
+                {
+                    if (DbConnect.connection.State == ConnectionState.Open)
+                    {
+                        DbConnect.connection.Close();
+                    }
+                }
+            }
+            else
+            {
+                MetroFramework.MetroMessageBox.Show(this, rslt_);
+            }
+            #endregion
+        }
+
+        private void DeleteUser()
+        {
+            String rslt_ = checkInsertUpdate();
+            #region Actions
+            if (rslt_ == "TRUE")
+            {
+                try
+                {
+                    String attr = GenarateAttr();
+                    DbConnect.OpenConnection();
+                    OracleCommand ora_cmd = new OracleCommand("USER_API.Delete_", DbConnect.connection);
+                    ora_cmd.BindByName = true;
+                    ora_cmd.CommandType = CommandType.StoredProcedure;
+                    OracleParameter op1 = new OracleParameter("userid_", OracleDbType.Varchar2, ParameterDirection.InputOutput);
+                    op1.Size = 30;
+                    op1.Value = wfmsTxtUserID.Text;
+                    Console.Out.WriteLine(attr);
+                    OracleParameter op2 = new OracleParameter("rslt_", OracleDbType.Varchar2, ParameterDirection.InputOutput);
+                    op2.Size = 100;
+                    ora_cmd.Parameters.Add(op1);
+                    ora_cmd.Parameters.Add(op2);
+
+                    if (ora_cmd.ExecuteNonQuery() != 0)
+                    {
+                        String msg = ora_cmd.Parameters["rslt_"].Value.ToString();
+                        MetroFramework.MetroMessageBox.Show(this, msg);
+                        if (msg == "TRUE")
+                        {
+                            MetroFramework.MetroMessageBox.Show(this, "Successfully deleted the user.");
+                            onClickedPopulate();
                         }
                         else
                             btnSave_Disable();
@@ -175,6 +210,8 @@ namespace WFMS.Employee.Clients
             string aa = dt.Rows[wfmsComboRecordPopulate.SelectedIndex][0].ToString();
             userObj.get(aa);
             setObjectToFields();
+            btnSave_Disable();
+            btnDelete_Enable();
         }
 
         private void setObjectToFields()
@@ -227,14 +264,8 @@ namespace WFMS.Employee.Clients
         private void btnSave_Click(object sender, EventArgs e)
         {
             #region Actions
-            if (String.IsNullOrEmpty(userObj.userid))
-            {
-                AddNew();
-            }
-            else
-            {
-                UpdateUser();
-            }
+            Save();
+            wfmsTxtUserID.Enabled = false;
             #endregion
         }
 
@@ -286,10 +317,22 @@ namespace WFMS.Employee.Clients
 
         private void wfmsTxtUserID_Enter(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(userObj.userid))
-                wfmsTxtUserID.Enabled = true;
-            else
-                wfmsTxtUserID.Enabled = false;
+            //if (String.IsNullOrEmpty(userObj.userid))
+            //    wfmsTxtUserID.Enabled = true;
+            //else
+            //    wfmsTxtUserID.Enabled = false;
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            #region Actions
+            if (DBevent == "D")
+            {
+                DeleteUser();
+            }
+            wfmsComboRecordPopulate.Items.Clear();
+            onClickedPopulate();
+            #endregion
         }
     }
 }

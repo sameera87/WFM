@@ -35,7 +35,7 @@ namespace WFMS.Common.Classes
             string connectionString;
             connectionString = "Data Source=" + server + ";User Id=" + uid + ";Password=" + password;
 
-            OracleConnection connection = new OracleConnection();
+            connection = new OracleConnection();
             connection.ConnectionString = "Data Source=" + server + ";User Id=" + uid + ";Password=" + password;
 
             try

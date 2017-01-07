@@ -37,6 +37,7 @@ namespace WFMS.Common.Clients
             Label[] lables = new Label[10];
             WfmsFormText[] textboxes = new WfmsFormText[10];
             DateTimePicker[] dtp = new DateTimePicker[10];
+            WfmsDate[] dates = new WfmsDate[10];
             int i = 0;
             int x = 50, y = 70;
             Text = "Search " + searchWindowName;
@@ -45,20 +46,40 @@ namespace WFMS.Common.Clients
             {
                 fieldWithType = s.Split(fieldDEL[1]);
                 lables[i] = new Label();
+                fieldWithType[0] = fieldWithType[0].Replace("_", " ");
                 lables[i].Text = fieldWithType[0];
-                textboxes[i] = new WfmsFormText();
-                textboxes[i].Name = fieldWithType[0];
-                lables[i].Location = new Point(x, y);
-                textboxes[i].Location = new Point(x + 100, y);
-                Controls.Add(lables[i]);
-                Controls.Add(textboxes[i]);
+
+                if (fieldWithType[1] == "DATE")
+                {
+                    dates[i] = new WfmsDate();
+                    dates[i].Format = DateTimePickerFormat.Custom;
+                    dates[i].CustomFormat = "dd-MM-yyyy";
+                    dates[i].Name = fieldWithType[0];
+                    lables[i].Location = new Point(x, y);
+                    dates[i].Location = new Point(x + 100, y);
+                    Controls.Add(lables[i]);
+                    Controls.Add(dates[i]);
+
+                }
+                else
+                {
+                    textboxes[i] = new WfmsFormText();
+                    textboxes[i].Name = fieldWithType[0];
+                    lables[i].Location = new Point(x, y);
+                    textboxes[i].Location = new Point(x + 100, y);
+                    Controls.Add(lables[i]);
+                    Controls.Add(textboxes[i]);
+
+                }
                 i++;
                 y = y + 40;
+
             }
         }
 
         private void btnSearch_Click_1(object sender, EventArgs e)
         {
+            
             string a = "";
             int i = 1;
             foreach (Control x in Controls)
@@ -76,6 +97,21 @@ namespace WFMS.Common.Clients
                         else
                         {
                             a += " AND " + x.Name + "= '" + x.Text + "'";
+                        }
+                    }
+                }
+                else if(x is WfmsDate)
+                {
+                    if (!String.IsNullOrEmpty(((WfmsDate)x).Text))
+                    {
+                        if (i == 1)
+                        {
+                            a += " Where " + x.Name + "= To_Date('" + x.Text + "', 'dd-MM-yyyy')";
+                            i++;
+                        }
+                        else
+                        {
+                            a += " AND " + x.Name + "= To_Date('" + x.Text + "', 'dd-MM-yyyy')";
                         }
                     }
                 }

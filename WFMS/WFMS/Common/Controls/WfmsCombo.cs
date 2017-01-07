@@ -13,7 +13,7 @@ namespace WFMS.Common.Controls
     {
         public WfmsCombo()
         {
-            //InitializeComponent();    
+            InitializeComponent();    
             frmMasterDetail.ClickedPopulate += onClickedPopulate;
             frmMasterDetail.ClickedNew += onClickedNew;
         }
@@ -97,7 +97,7 @@ namespace WFMS.Common.Controls
             {
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
-                    Items.Add(dt.Rows[i][0] + "     | " + dt.Rows[i][1]);
+                    Items.Add(dt.Rows[i][0] + " | " + dt.Rows[i][1]);
                 }
                 if (dt.Rows.Count > 1)
                 {

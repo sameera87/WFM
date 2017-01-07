@@ -57,13 +57,23 @@
             // 
             this.wfmsComboRecordPopulate.SelectedIndexChanged += new System.EventHandler(this.wfmsComboRecordPopulate_SelectedIndexChanged);
             // 
+            // btnNew
+            // 
+            this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
+            // 
             // btnSave
             // 
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
+            // btnDelete
+            // 
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
             // wfmsDate
             // 
+            this.wfmsDate.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.wfmsDate.MinimumSize = new System.Drawing.Size(0, 29);
+            this.wfmsDate.SQLColumn = "ROWVERSION";
             // 
             // metroLabel1
             // 
@@ -304,7 +314,9 @@
             // 
             // wfmsDtpCreated
             // 
+            this.wfmsDtpCreated.CustomFormat = "dd-MM-yyyy";
             this.wfmsDtpCreated.Enabled = false;
+            this.wfmsDtpCreated.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.wfmsDtpCreated.Location = new System.Drawing.Point(143, 370);
             this.wfmsDtpCreated.MinimumSize = new System.Drawing.Size(0, 29);
             this.wfmsDtpCreated.Name = "wfmsDtpCreated";
@@ -323,7 +335,9 @@
             // 
             // wfmsDtpModified
             // 
+            this.wfmsDtpModified.CustomFormat = "dd-MM-yyyy";
             this.wfmsDtpModified.Enabled = false;
+            this.wfmsDtpModified.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.wfmsDtpModified.Location = new System.Drawing.Point(143, 420);
             this.wfmsDtpModified.MinimumSize = new System.Drawing.Size(0, 29);
             this.wfmsDtpModified.Name = "wfmsDtpModified";
@@ -350,7 +364,13 @@
             this.Controls.Add(this.metroLabel2);
             this.Controls.Add(this.wfmsTxtUserID);
             this.Controls.Add(this.metroLabel1);
+            this.MainCombo_col1 = "USER_ID";
+            this.MainCombo_col1_sql = "USER_ID";
+            this.MainCombo_col2 = "USER_TYPE";
+            this.MainCombo_col2_sql = "USER_TYPE";
+            this.MainCombo_col3 = "FIRST_NAME";
             this.Name = "frmUser";
+            this.Table = "USER_TAB";
             this.Text = "Manage Users";
             this.Controls.SetChildIndex(this.wfmsComboRecordPopulate, 0);
             this.Controls.SetChildIndex(this.btnPopulate, 0);

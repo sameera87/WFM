@@ -29,6 +29,8 @@ namespace WFMS.Common.Controls
 
         public static EventHandler<SQLColumnEventArgs> Entered;
         public static EventHandler Left;
+        public static EventHandler Text_Edited;
+
 
         #region Properties
 
@@ -169,7 +171,23 @@ namespace WFMS.Common.Controls
             {
                 BackColor = default(Color);
             }
-            Edited = true;    
+            Edited = true;
+
+            if (Edited == true)
+            {
+                OnEdited();
+            }
+        }
+
+        private void WfmsText_Edited(object sender, EventArgs e)
+        {
+            OnEdited();
+        }
+
+        protected virtual void OnEdited()
+        {
+            if (Text_Edited != null)
+                Text_Edited(this, EventArgs.Empty);
         }
 
         private void WfmsText_Enter(object sender, EventArgs e)

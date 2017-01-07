@@ -25,4 +25,3 @@ E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.Properties.Resources.resources
 E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.csproj.GenerateResource.Cache
 E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.exe
 E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.pdb
-E:\WFMS\trunk\WFMS\WFMS\obj\Debug\WFMS.csprojResolveAssemblyReference.cache
