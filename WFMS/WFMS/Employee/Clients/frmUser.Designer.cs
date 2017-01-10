@@ -38,10 +38,6 @@
             this.wfmsTxtPassword = new WFMS.Common.Controls.WfmsText();
             this.metroLabel5 = new MetroFramework.Controls.MetroLabel();
             this.wfmsCmbUserType = new WFMS.Common.Controls.WfmsCombo();
-            this.metroLabel6 = new MetroFramework.Controls.MetroLabel();
-            this.wfmsDtpCreated = new WFMS.Common.Controls.WfmsDate();
-            this.metroLabel7 = new MetroFramework.Controls.MetroLabel();
-            this.wfmsDtpModified = new WFMS.Common.Controls.WfmsDate();
             ((System.ComponentModel.ISupportInitialize)(this.dt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnPopulate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnNew)).BeginInit();
@@ -74,6 +70,26 @@
             this.wfmsDate.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.wfmsDate.MinimumSize = new System.Drawing.Size(0, 29);
             this.wfmsDate.SQLColumn = "ROWVERSION";
+            // 
+            // wfmsDtpCreated
+            // 
+            this.wfmsDtpCreated.Location = new System.Drawing.Point(143, 370);
+            this.wfmsDtpCreated.MinimumSize = new System.Drawing.Size(0, 29);
+            this.wfmsDtpCreated.Size = new System.Drawing.Size(239, 29);
+            // 
+            // metroLabel1i
+            // 
+            this.metroLabel1i.Location = new System.Drawing.Point(34, 370);
+            // 
+            // metroLabel2i
+            // 
+            this.metroLabel2i.Location = new System.Drawing.Point(34, 420);
+            // 
+            // wfmsDtpModified
+            // 
+            this.wfmsDtpModified.Location = new System.Drawing.Point(143, 420);
+            this.wfmsDtpModified.MinimumSize = new System.Drawing.Size(0, 29);
+            this.wfmsDtpModified.Size = new System.Drawing.Size(239, 29);
             // 
             // metroLabel1
             // 
@@ -303,57 +319,11 @@
             this.wfmsCmbUserType.TabIndex = 19;
             this.wfmsCmbUserType.UseSelectable = true;
             // 
-            // metroLabel6
-            // 
-            this.metroLabel6.AutoSize = true;
-            this.metroLabel6.Location = new System.Drawing.Point(34, 370);
-            this.metroLabel6.Name = "metroLabel6";
-            this.metroLabel6.Size = new System.Drawing.Size(56, 19);
-            this.metroLabel6.TabIndex = 20;
-            this.metroLabel6.Text = "Created";
-            // 
-            // wfmsDtpCreated
-            // 
-            this.wfmsDtpCreated.CustomFormat = "dd-MM-yyyy";
-            this.wfmsDtpCreated.Enabled = false;
-            this.wfmsDtpCreated.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.wfmsDtpCreated.Location = new System.Drawing.Point(143, 370);
-            this.wfmsDtpCreated.MinimumSize = new System.Drawing.Size(0, 29);
-            this.wfmsDtpCreated.Name = "wfmsDtpCreated";
-            this.wfmsDtpCreated.Size = new System.Drawing.Size(239, 29);
-            this.wfmsDtpCreated.SQLColumn = "CREATED_DATE";
-            this.wfmsDtpCreated.TabIndex = 21;
-            // 
-            // metroLabel7
-            // 
-            this.metroLabel7.AutoSize = true;
-            this.metroLabel7.Location = new System.Drawing.Point(34, 420);
-            this.metroLabel7.Name = "metroLabel7";
-            this.metroLabel7.Size = new System.Drawing.Size(62, 19);
-            this.metroLabel7.TabIndex = 22;
-            this.metroLabel7.Text = "Modified";
-            // 
-            // wfmsDtpModified
-            // 
-            this.wfmsDtpModified.CustomFormat = "dd-MM-yyyy";
-            this.wfmsDtpModified.Enabled = false;
-            this.wfmsDtpModified.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.wfmsDtpModified.Location = new System.Drawing.Point(143, 420);
-            this.wfmsDtpModified.MinimumSize = new System.Drawing.Size(0, 29);
-            this.wfmsDtpModified.Name = "wfmsDtpModified";
-            this.wfmsDtpModified.Size = new System.Drawing.Size(239, 29);
-            this.wfmsDtpModified.SQLColumn = "MODIFIED_DATE";
-            this.wfmsDtpModified.TabIndex = 23;
-            // 
             // frmUser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1024, 768);
-            this.Controls.Add(this.wfmsDtpModified);
-            this.Controls.Add(this.metroLabel7);
-            this.Controls.Add(this.wfmsDtpCreated);
-            this.Controls.Add(this.metroLabel6);
             this.Controls.Add(this.wfmsCmbUserType);
             this.Controls.Add(this.metroLabel5);
             this.Controls.Add(this.wfmsTxtPassword);
@@ -364,6 +334,7 @@
             this.Controls.Add(this.metroLabel2);
             this.Controls.Add(this.wfmsTxtUserID);
             this.Controls.Add(this.metroLabel1);
+            this.Location = new System.Drawing.Point(0, 0);
             this.MainCombo_col1 = "USER_ID";
             this.MainCombo_col1_sql = "USER_ID";
             this.MainCombo_col2 = "USER_TYPE";
@@ -371,7 +342,11 @@
             this.MainCombo_col3 = "FIRST_NAME";
             this.Name = "frmUser";
             this.Table = "USER_TAB";
-            this.Text = "Manage Users";
+            this.Text = "User Details";
+            this.Controls.SetChildIndex(this.metroLabel1i, 0);
+            this.Controls.SetChildIndex(this.metroLabel2i, 0);
+            this.Controls.SetChildIndex(this.wfmsDtpModified, 0);
+            this.Controls.SetChildIndex(this.wfmsDtpCreated, 0);
             this.Controls.SetChildIndex(this.wfmsComboRecordPopulate, 0);
             this.Controls.SetChildIndex(this.btnPopulate, 0);
             this.Controls.SetChildIndex(this.btnNew, 0);
@@ -392,10 +367,6 @@
             this.Controls.SetChildIndex(this.wfmsTxtPassword, 0);
             this.Controls.SetChildIndex(this.metroLabel5, 0);
             this.Controls.SetChildIndex(this.wfmsCmbUserType, 0);
-            this.Controls.SetChildIndex(this.metroLabel6, 0);
-            this.Controls.SetChildIndex(this.wfmsDtpCreated, 0);
-            this.Controls.SetChildIndex(this.metroLabel7, 0);
-            this.Controls.SetChildIndex(this.wfmsDtpModified, 0);
             ((System.ComponentModel.ISupportInitialize)(this.dt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnPopulate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnNew)).EndInit();
@@ -422,9 +393,5 @@
         private Common.Controls.WfmsText wfmsTxtPassword;
         private MetroFramework.Controls.MetroLabel metroLabel5;
         private Common.Controls.WfmsCombo wfmsCmbUserType;
-        private MetroFramework.Controls.MetroLabel metroLabel6;
-        private Common.Controls.WfmsDate wfmsDtpCreated;
-        private MetroFramework.Controls.MetroLabel metroLabel7;
-        private Common.Controls.WfmsDate wfmsDtpModified;
     }
 }

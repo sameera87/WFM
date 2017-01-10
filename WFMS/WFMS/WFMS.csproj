@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="libphonenumber_csharp_portable">
+      <HintPath>..\..\DLL\libphonenumber_csharp_portable.dll</HintPath>
+    </Reference>
     <Reference Include="MetroFramework">
       <HintPath>..\..\DLL\MetroFramework.dll</HintPath>
     </Reference>
@@ -59,6 +62,12 @@
   <ItemGroup>
     <Compile Include="Common\Classes\Client_SYS.cs" />
     <Compile Include="Common\Classes\DbConnect.cs" />
+    <Compile Include="Common\Clients\dlgAddress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Common\Clients\dlgAddress.Designer.cs">
+      <DependentUpon>dlgAddress.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Clients\dlgSearch.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,8 +108,32 @@
     <Compile Include="Employee\Clients\frmUser.Designer.cs">
       <DependentUpon>frmUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Enterprise\Business Logic\Company.cs" />
+    <Compile Include="Enterprise\Business Logic\DayType.cs" />
+    <Compile Include="Enterprise\Business Logic\WorkTimeLine.cs" />
+    <Compile Include="Enterprise\Client\dlgAddressForCompany.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Enterprise\Client\dlgAddressForCompany.Designer.cs">
+      <DependentUpon>dlgAddressForCompany.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Enterprise\Client\frmCompany.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Enterprise\Client\frmCompany.Designer.cs">
+      <DependentUpon>frmCompany.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Enterprise\Client\frmDayType.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Enterprise\Client\frmDayType.Designer.cs">
+      <DependentUpon>frmDayType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Common\Clients\dlgAddress.resx">
+      <DependentUpon>dlgAddress.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Common\Clients\dlgSearch.resx">
       <DependentUpon>dlgSearch.cs</DependentUpon>
     </EmbeddedResource>
@@ -112,6 +145,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Employee\Clients\frmUser.resx">
       <DependentUpon>frmUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Enterprise\Client\dlgAddressForCompany.resx">
+      <DependentUpon>dlgAddressForCompany.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Enterprise\Client\frmCompany.resx">
+      <DependentUpon>frmCompany.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Enterprise\Client\frmDayType.resx">
+      <DependentUpon>frmDayType.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -137,8 +179,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Enterprise\" />
-    <Folder Include="Job\" />
+    <Folder Include="Invoice\" />
+    <Folder Include="Job\Business Logic\" />
+    <Folder Include="Job\Client\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Delete_click.png" />

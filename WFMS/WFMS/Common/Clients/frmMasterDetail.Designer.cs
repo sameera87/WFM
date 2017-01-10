@@ -38,6 +38,10 @@
             this.btnSearch = new System.Windows.Forms.PictureBox();
             this.wfmsDate = new WFMS.Common.Controls.WfmsDate();
             this.wfmsComboRecordPopulate = new WFMS.Common.Controls.WfmsCombo();
+            this.metroLabel1i = new MetroFramework.Controls.MetroLabel();
+            this.metroLabel2i = new MetroFramework.Controls.MetroLabel();
+            this.wfmsDtpCreated = new WFMS.Common.Controls.WfmsDate();
+            this.wfmsDtpModified = new WFMS.Common.Controls.WfmsDate();
             ((System.ComponentModel.ISupportInitialize)(this.btnPopulate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnNew)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnSave)).BeginInit();
@@ -163,13 +167,14 @@
             this.wfmsDate.MinimumSize = new System.Drawing.Size(0, 29);
             this.wfmsDate.Name = "wfmsDate";
             this.wfmsDate.Size = new System.Drawing.Size(200, 29);
-            this.wfmsDate.SQLColumn = "";
+            this.wfmsDate.SQLColumn = "ROWVERSION";
             this.wfmsDate.TabIndex = 9;
             // 
             // wfmsComboRecordPopulate
             // 
             this.wfmsComboRecordPopulate.BackColor = System.Drawing.Color.LightGray;
             this.wfmsComboRecordPopulate.Edited = false;
+            this.wfmsComboRecordPopulate.Enabled = false;
             this.wfmsComboRecordPopulate.ForeverDisable = false;
             this.wfmsComboRecordPopulate.FormattingEnabled = true;
             this.wfmsComboRecordPopulate.ItemHeight = 23;
@@ -182,11 +187,57 @@
             this.wfmsComboRecordPopulate.TabIndex = 0;
             this.wfmsComboRecordPopulate.UseSelectable = true;
             // 
+            // metroLabel1i
+            // 
+            this.metroLabel1i.AutoSize = true;
+            this.metroLabel1i.Location = new System.Drawing.Point(34, 617);
+            this.metroLabel1i.Name = "metroLabel1i";
+            this.metroLabel1i.Size = new System.Drawing.Size(56, 19);
+            this.metroLabel1i.TabIndex = 10;
+            this.metroLabel1i.Text = "Created";
+            // 
+            // metroLabel2i
+            // 
+            this.metroLabel2i.AutoSize = true;
+            this.metroLabel2i.Location = new System.Drawing.Point(34, 667);
+            this.metroLabel2i.Name = "metroLabel2i";
+            this.metroLabel2i.Size = new System.Drawing.Size(62, 19);
+            this.metroLabel2i.TabIndex = 11;
+            this.metroLabel2i.Text = "Modified";
+            // 
+            // wfmsDtpCreated
+            // 
+            this.wfmsDtpCreated.CustomFormat = "dd-MM-yyyy";
+            this.wfmsDtpCreated.Enabled = false;
+            this.wfmsDtpCreated.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.wfmsDtpCreated.Location = new System.Drawing.Point(143, 617);
+            this.wfmsDtpCreated.MinimumSize = new System.Drawing.Size(4, 29);
+            this.wfmsDtpCreated.Name = "wfmsDtpCreated";
+            this.wfmsDtpCreated.Size = new System.Drawing.Size(212, 29);
+            this.wfmsDtpCreated.SQLColumn = "CREATED_DATE";
+            this.wfmsDtpCreated.TabIndex = 12;
+            // 
+            // wfmsDtpModified
+            // 
+            this.wfmsDtpModified.CustomFormat = "dd-MM-yyyy";
+            this.wfmsDtpModified.Enabled = false;
+            this.wfmsDtpModified.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.wfmsDtpModified.Location = new System.Drawing.Point(143, 667);
+            this.wfmsDtpModified.MinimumSize = new System.Drawing.Size(4, 29);
+            this.wfmsDtpModified.Name = "wfmsDtpModified";
+            this.wfmsDtpModified.Size = new System.Drawing.Size(212, 29);
+            this.wfmsDtpModified.SQLColumn = "MODIFIED_DATE";
+            this.wfmsDtpModified.TabIndex = 13;
+            // 
             // frmMasterDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1024, 768);
+            this.Controls.Add(this.wfmsDtpModified);
+            this.Controls.Add(this.wfmsDtpCreated);
+            this.Controls.Add(this.metroLabel2i);
+            this.Controls.Add(this.metroLabel1i);
             this.Controls.Add(this.wfmsDate);
             this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.btnRefresh);
@@ -209,6 +260,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.btnRefresh)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnSearch)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -224,5 +276,9 @@
         protected System.Windows.Forms.PictureBox btnRefresh;
         protected System.Windows.Forms.PictureBox btnSearch;
         protected Controls.WfmsDate wfmsDate;
+        protected Controls.WfmsDate wfmsDtpCreated;
+        protected MetroFramework.Controls.MetroLabel metroLabel1i;
+        protected MetroFramework.Controls.MetroLabel metroLabel2i;
+        protected Controls.WfmsDate wfmsDtpModified;
     }
 }

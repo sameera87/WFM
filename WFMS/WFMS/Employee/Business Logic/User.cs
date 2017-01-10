@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WFMS.Common.Classes;
+using WFMS.Employee.Clients;
 
 namespace WFMS.Employee.Business_Logic
 {
@@ -75,6 +76,7 @@ namespace WFMS.Employee.Business_Logic
                     rslt_ = ora_cmd.Parameters["rslt_"].Value.ToString();
                     if (rslt_ != "TRUE")
                     {
+                        //MetroFramework.MetroMessageBox.Show(new frmUser,"Error while excecuting");
                         MessageBox.Show("Error while excecuting");
                     }
                     userid = user;
@@ -82,9 +84,9 @@ namespace WFMS.Employee.Business_Logic
                     lastName = ora_cmd.Parameters["lastName_"].Value.ToString();
                     password = ora_cmd.Parameters["password_"].Value.ToString();
                     userType = ora_cmd.Parameters["userType_"].Value.ToString();
-                    createdDate = DateTime.ParseExact(ora_cmd.Parameters["createdDate_"].Value.ToString(), "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-                    modifiedDate = DateTime.ParseExact(ora_cmd.Parameters["modifiedDate_"].Value.ToString(), "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-                    rowversion = DateTime.ParseExact(ora_cmd.Parameters["rowversion_"].Value.ToString(), "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                    createdDate = DateTime.ParseExact(ora_cmd.Parameters["createdDate_"].Value.ToString(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
+                    modifiedDate = DateTime.ParseExact(ora_cmd.Parameters["modifiedDate_"].Value.ToString(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
+                    rowversion = DateTime.ParseExact(ora_cmd.Parameters["rowversion_"].Value.ToString(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
                 }
             }
             catch (Exception ex)
