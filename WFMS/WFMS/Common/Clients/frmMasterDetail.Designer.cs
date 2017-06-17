@@ -163,6 +163,7 @@
             // 
             // wfmsDate
             // 
+            this.wfmsDate.Enabled = false;
             this.wfmsDate.Location = new System.Drawing.Point(792, 76);
             this.wfmsDate.MinimumSize = new System.Drawing.Size(0, 29);
             this.wfmsDate.Name = "wfmsDate";

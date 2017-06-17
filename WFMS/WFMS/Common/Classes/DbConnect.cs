@@ -29,14 +29,14 @@ namespace WFMS.Common.Classes
         //open connection to database
         public static bool OpenConnection()
         {
-            server = "13.76.35.247/xe";
-            uid = "system";
+            server = "13.67.119.3/xe";
+            uid = "SYS";
             password = "admin";
             string connectionString;
-            connectionString = "Data Source=" + server + ";User Id=" + uid + ";Password=" + password;
-
+            connectionString = "Data Source=" + server + ";User Id=" + uid + ";Password=" + password + ";DBA Privilege=SYSDBA";
+            
             connection = new OracleConnection();
-            connection.ConnectionString = "Data Source=" + server + ";User Id=" + uid + ";Password=" + password;
+            connection.ConnectionString = connectionString;
 
             try
             {

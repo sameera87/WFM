@@ -86,7 +86,7 @@ namespace WFMS.Employee.Clients
                             attr = ora_cmd.Parameters["attr_"].Value.ToString(); ;
                             if (attr != "null")
                                 userObj.Unpack_Attr(attr);
-                            setObjectToFields();
+                                setObjectToFields();
                         }
                         else
                             btnSave_Disable();

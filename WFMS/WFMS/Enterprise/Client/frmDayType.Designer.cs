@@ -52,9 +52,22 @@
             ((System.ComponentModel.ISupportInitialize)(this.metroGrid1)).BeginInit();
             this.SuspendLayout();
             // 
+            // wfmsComboRecordPopulate
+            // 
+            this.wfmsComboRecordPopulate.SelectedIndexChanged += new System.EventHandler(this.wfmsComboRecordPopulate_SelectedIndexChanged);
+            // 
+            // btnNew
+            // 
+            this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
+            // 
             // btnSave
             // 
             this.btnSave.Image = ((System.Drawing.Image)(resources.GetObject("btnSave.Image")));
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // wfmsDate
             // 
@@ -62,7 +75,7 @@
             // 
             // wfmsDtpCreated
             // 
-            this.wfmsDtpCreated.Location = new System.Drawing.Point(527, 144);
+            this.wfmsDtpCreated.Location = new System.Drawing.Point(527, 138);
             this.wfmsDtpCreated.MinimumSize = new System.Drawing.Size(0, 29);
             // 
             // metroLabel1i
@@ -71,11 +84,11 @@
             // 
             // metroLabel2i
             // 
-            this.metroLabel2i.Location = new System.Drawing.Point(418, 194);
+            this.metroLabel2i.Location = new System.Drawing.Point(418, 188);
             // 
             // wfmsDtpModified
             // 
-            this.wfmsDtpModified.Location = new System.Drawing.Point(527, 194);
+            this.wfmsDtpModified.Location = new System.Drawing.Point(527, 182);
             this.wfmsDtpModified.MinimumSize = new System.Drawing.Size(0, 29);
             // 
             // metroLabel1
@@ -137,6 +150,7 @@
             // 
             // wfmsTxtDayTypeDesc
             // 
+            this.wfmsTxtDayTypeDesc.BackColor = System.Drawing.Color.LightGray;
             // 
             // 
             // 
@@ -185,11 +199,11 @@
             // metroLabel4
             // 
             this.metroLabel4.AutoSize = true;
-            this.metroLabel4.Location = new System.Drawing.Point(312, 232);
+            this.metroLabel4.Location = new System.Drawing.Point(319, 232);
             this.metroLabel4.Name = "metroLabel4";
-            this.metroLabel4.Size = new System.Drawing.Size(43, 19);
+            this.metroLabel4.Size = new System.Drawing.Size(36, 19);
             this.metroLabel4.TabIndex = 19;
-            this.metroLabel4.Text = "Hours";
+            this.metroLabel4.Text = "Mins";
             // 
             // wfmsTxtWorkTimePerDay
             // 
@@ -198,7 +212,7 @@
             // 
             // 
             this.wfmsTxtWorkTimePerDay.CustomButton.Image = null;
-            this.wfmsTxtWorkTimePerDay.CustomButton.Location = new System.Drawing.Point(108, 1);
+            this.wfmsTxtWorkTimePerDay.CustomButton.Location = new System.Drawing.Point(115, 1);
             this.wfmsTxtWorkTimePerDay.CustomButton.Name = "";
             this.wfmsTxtWorkTimePerDay.CustomButton.Size = new System.Drawing.Size(21, 21);
             this.wfmsTxtWorkTimePerDay.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
@@ -223,8 +237,8 @@
             this.wfmsTxtWorkTimePerDay.SelectionLength = 0;
             this.wfmsTxtWorkTimePerDay.SelectionStart = 0;
             this.wfmsTxtWorkTimePerDay.ShortcutsEnabled = true;
-            this.wfmsTxtWorkTimePerDay.Size = new System.Drawing.Size(130, 23);
-            this.wfmsTxtWorkTimePerDay.SQLColumn = "";
+            this.wfmsTxtWorkTimePerDay.Size = new System.Drawing.Size(137, 23);
+            this.wfmsTxtWorkTimePerDay.SQLColumn = "WORK_TIME_PER_DAY";
             this.wfmsTxtWorkTimePerDay.TabIndex = 20;
             this.wfmsTxtWorkTimePerDay.UseCustomBackColor = true;
             this.wfmsTxtWorkTimePerDay.UseSelectable = true;
@@ -271,7 +285,7 @@
             this.metroGrid1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.metroGrid1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid1.Size = new System.Drawing.Size(705, 410);
+            this.metroGrid1.Size = new System.Drawing.Size(904, 431);
             this.metroGrid1.TabIndex = 21;
             // 
             // frmDayType
@@ -288,6 +302,10 @@
             this.Controls.Add(this.wfmsTxtDayTypeID);
             this.Controls.Add(this.metroLabel1);
             this.Location = new System.Drawing.Point(0, 0);
+            this.MainCombo_col1 = "DAY_TYPE_ID";
+            this.MainCombo_col1_sql = "DAY_TYPE_ID";
+            this.MainCombo_col2 = "DESCRIPTION";
+            this.MainCombo_col2_sql = "DESCRIPTION";
             this.Name = "frmDayType";
             this.Table = "DAY_TYPE_TAB";
             this.Text = "Day Type";

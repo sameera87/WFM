@@ -69,7 +69,6 @@
             // 
             this.wfmsDate.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.wfmsDate.MinimumSize = new System.Drawing.Size(0, 29);
-            this.wfmsDate.SQLColumn = "ROWVERSION";
             // 
             // wfmsDtpCreated
             // 

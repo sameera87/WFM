@@ -16,7 +16,7 @@ namespace WFMS
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new WFMS.Enterprise.Client.frmCompany());
+            Application.Run(new WFMS.Enterprise.Client.frmDayType());
         }
     }
 }

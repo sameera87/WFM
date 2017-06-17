@@ -33,9 +33,9 @@ namespace WFMS.Employee.Business_Logic
             lastName = "";
             password = "";
             userType = "";
-            createdDate = DateTime.Today;
-            modifiedDate = DateTime.Today;
-            rowversion = DateTime.Today;
+            createdDate = DateTime.Now.Date;
+            modifiedDate = DateTime.Now.Date;
+            rowversion = DateTime.Now.Date;
         }
 
         public void Unpack_Attr(String attr)
@@ -84,9 +84,9 @@ namespace WFMS.Employee.Business_Logic
                     lastName = ora_cmd.Parameters["lastName_"].Value.ToString();
                     password = ora_cmd.Parameters["password_"].Value.ToString();
                     userType = ora_cmd.Parameters["userType_"].Value.ToString();
-                    createdDate = DateTime.ParseExact(ora_cmd.Parameters["createdDate_"].Value.ToString(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
-                    modifiedDate = DateTime.ParseExact(ora_cmd.Parameters["modifiedDate_"].Value.ToString(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
-                    rowversion = DateTime.ParseExact(ora_cmd.Parameters["rowversion_"].Value.ToString(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
+                    createdDate = DateTime.ParseExact(ora_cmd.Parameters["createdDate_"].Value.ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
+                    modifiedDate = DateTime.ParseExact(ora_cmd.Parameters["modifiedDate_"].Value.ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
+                    rowversion = DateTime.ParseExact(ora_cmd.Parameters["rowversion_"].Value.ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None);
                 }
             }
             catch (Exception ex)
