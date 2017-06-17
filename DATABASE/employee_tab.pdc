@@ -1,0 +1,61 @@
+-- Create table
+create table EMPLOYEE_TAB
+(
+  employee_id     VARCHAR2(20) not null,
+  emp_name        VARCHAR2(100),
+  emp_address_id  NUMBER,
+  emp_email       VARCHAR2(100),
+  home_phone_no   VARCHAR2(20),
+  mobile_phone_no VARCHAR2(20),
+  employee_type   NUMBER default 0 not null,
+  employee_status NUMBER default 0 not null,
+  emp_start_date  DATE default SYSDATE not null,
+  emp_finish_date DATE,
+  valid_from      DATE,
+  valid_to        DATE,
+  user_id         VARCHAR2(15),
+  calendar_id     VARCHAR2(20),
+  company_id      VARCHAR2(100),
+  created_date    DATE default SYSDATE not null,
+  modified_date   DATE default SYSDATE not null,
+  rowversion      DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table EMPLOYEE_TAB
+  add constraint EMPLOYEE_TAB_PK primary key (EMPLOYEE_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table EMPLOYEE_TAB
+  add constraint EMPLOYEE_TAB_FK1 foreign key (EMP_ADDRESS_ID)
+  references ADDRESS_TAB (ADDRESS_ID) on delete set null;
+alter table EMPLOYEE_TAB
+  add constraint EMPLOYEE_TAB_FK2 foreign key (CALENDAR_ID)
+  references WORK_TIME_CALENDAR_TAB (CALENDAR_ID) on delete set null;
+alter table EMPLOYEE_TAB
+  add constraint EMPLOYEE_TAB_FK3 foreign key (USER_ID)
+  references USER_TAB (USER_ID) on delete set null;
+alter table EMPLOYEE_TAB
+  add constraint EMPLOYEE_TAB_FK4 foreign key (COMPANY_ID)
+  references COMPANY_TAB (COMPANY_ID) on delete set null;

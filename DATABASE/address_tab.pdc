@@ -1,0 +1,46 @@
+-- Create table
+create table ADDRESS_TAB
+(
+  address_id       NUMBER not null,
+  address_line1    VARCHAR2(100) not null,
+  address_line2    VARCHAR2(100),
+  city             VARCHAR2(100) not null,
+  zip_code         VARCHAR2(100) not null,
+  country_code     VARCHAR2(3),
+  created_date     DATE default SYSDATE not null,
+  modified_date    DATE default SYSDATE not null,
+  rowversion       DATE default SYSDATE not null,
+  ref_type         NUMBER default 0,
+  ref_id           VARCHAR2(100),
+  default_add_flag NUMBER default 0 not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table ADDRESS_TAB
+  add constraint ADDRESS_TAB_PK primary key (ADDRESS_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table ADDRESS_TAB
+  add constraint ADDRESS_TAB_FK1 foreign key (COUNTRY_CODE)
+  references COUNTRY_TAB (COUNTRY_CODE) on delete set null;

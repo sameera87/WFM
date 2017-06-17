@@ -1,0 +1,44 @@
+-- Create table
+create table REPORT_JOB_TAB
+(
+  job_no          NUMBER not null,
+  actual_start    DATE default SYSDATE,
+  actual_finish   DATE default SYSDATE,
+  work_done       VARCHAR2(100),
+  reported_hours  NUMBER,
+  work_done_image BLOB,
+  employee_id     VARCHAR2(20) not null,
+  created_date    DATE default SYSDATE not null,
+  modified_date   DATE default SYSDATE not null,
+  rowversion      DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table REPORT_JOB_TAB
+  add constraint REPORT_JOB_TAB_PK primary key (JOB_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table REPORT_JOB_TAB
+  add constraint REPORT_JOB_TAB_FK foreign key (EMPLOYEE_ID)
+  references EMPLOYEE_TAB (EMPLOYEE_ID);

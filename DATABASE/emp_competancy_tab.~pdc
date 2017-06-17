@@ -1,0 +1,44 @@
+-- Create table
+create table EMP_COMPETANCY_TAB
+(
+  competancy_id    VARCHAR2(20),
+  employee_id      VARCHAR2(20) not null,
+  created_date     DATE default SYSDATE not null,
+  modified_date    DATE default SYSDATE not null,
+  emp_comp_line_no NUMBER default 1 not null,
+  default_emp_comp NUMBER default 0 not null,
+  rowversion       DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table EMP_COMPETANCY_TAB
+  add constraint EMP_COMPETANCY_TAB_PK primary key (EMP_COMP_LINE_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table EMP_COMPETANCY_TAB
+  add constraint EMP_COMPETANCY_TAB_FK1 foreign key (COMPETANCY_ID)
+  references COMPETANCY_TAB (COMPETANCY_ID) on delete set null;
+alter table EMP_COMPETANCY_TAB
+  add constraint EMP_COMPETANCY_TAB_FK2 foreign key (EMPLOYEE_ID)
+  references EMPLOYEE_TAB (EMPLOYEE_ID) on delete cascade;

@@ -1,0 +1,39 @@
+-- Create table
+create table USER_TAB
+(
+  user_id       VARCHAR2(15) not null,
+  first_name    VARCHAR2(30) not null,
+  last_name     VARCHAR2(30),
+  password      VARCHAR2(30) default 'Password' not null,
+  user_type     VARCHAR2(30) default 'Field Service Engineer' not null,
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table USER_TAB
+  add constraint USER_TAB_PK primary key (USER_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

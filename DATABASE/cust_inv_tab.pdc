@@ -1,0 +1,51 @@
+-- Create table
+create table CUST_INV_TAB
+(
+  cust_inv_no           NUMBER not null,
+  inv_desc              VARCHAR2(100),
+  inv_status            NUMBER default 0 not null,
+  sales_price_amount    NUMBER default 0 not null,
+  discount              NUMBER default 0 not null,
+  gross_sales_price_amt NUMBER default 0 not null,
+  pending_payment_flag  NUMBER default 1 not null,
+  created_date          DATE default SYSDATE not null,
+  modified_date         DATE default SYSDATE not null,
+  rowversion            DATE default SYSDATE not null,
+  customer_id           VARCHAR2(20) not null,
+  cust_email_add        VARCHAR2(100) not null,
+  notes                 VARCHAR2(1000),
+  job_no                NUMBER not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table CUST_INV_TAB
+  add constraint CUST_INV_TAB_PK primary key (CUST_INV_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table CUST_INV_TAB
+  add constraint CUST_INV_TAB_FK1 foreign key (JOB_NO)
+  references JOB_TAB (JOB_NO) on delete cascade;
+alter table CUST_INV_TAB
+  add constraint CUST_INV_TAB_FK2 foreign key (CUSTOMER_ID)
+  references CUSTOMER_TAB (CUSTOMER_ID) on delete cascade;

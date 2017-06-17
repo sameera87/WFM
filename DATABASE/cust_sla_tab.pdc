@@ -1,0 +1,51 @@
+-- Create table
+create table CUST_SLA_TAB
+(
+  sla_id            VARCHAR2(20) not null,
+  sla_desc          VARCHAR2(100),
+  response_time_h   NUMBER default 0,
+  response_time_m   NUMBER default 0,
+  resolution_time_h NUMBER default 0,
+  resolution_time_m NUMBER default 0,
+  cut_off_time_h    NUMBER default 0,
+  cut_off_time_m    NUMBER default 0,
+  calendar_id       VARCHAR2(20),
+  customer_id       VARCHAR2(20) not null,
+  created_date      DATE default SYSDATE not null,
+  modified_date     DATE default SYSDATE not null,
+  rowversion        DATE default SYSDATE not null,
+  default_sla       NUMBER default 0 not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table CUST_SLA_TAB
+  add constraint CUST_SLA_TAB_PK primary key (SLA_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table CUST_SLA_TAB
+  add constraint CUST_SLA_TAB_FK1 foreign key (CUSTOMER_ID)
+  references CUSTOMER_TAB (CUSTOMER_ID) on delete cascade;
+alter table CUST_SLA_TAB
+  add constraint CUST_SLA_TAB_FK2 foreign key (CALENDAR_ID)
+  references WORK_TIME_CALENDAR_TAB (CALENDAR_ID) on delete set null;

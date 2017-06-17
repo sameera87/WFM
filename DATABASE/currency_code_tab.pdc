@@ -1,0 +1,36 @@
+-- Create table
+create table CURRENCY_CODE_TAB
+(
+  currency_code VARCHAR2(3) not null,
+  description   VARCHAR2(100),
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table CURRENCY_CODE_TAB
+  add constraint CURRENCY_CODE_TAB_PK primary key (CURRENCY_CODE)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

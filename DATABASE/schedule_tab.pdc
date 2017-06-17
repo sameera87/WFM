@@ -1,0 +1,38 @@
+-- Create table
+create table SCHEDULE_TAB
+(
+  schedule_id       VARCHAR2(20) not null,
+  description       VARCHAR2(100),
+  sch_start_date    VARCHAR2(20) default SYSDATE not null,
+  work_time_per_sch as (0),
+  created_date      DATE default SYSDATE not null,
+  modified_date     DATE default SYSDATE not null,
+  rowversion        DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table SCHEDULE_TAB
+  add constraint SCHEDULE_TAB_PK primary key (SCHEDULE_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

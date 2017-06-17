@@ -1,0 +1,8 @@
+-- Create sequence 
+create sequence WFMS_WORK_TIME_LINE_NO_SEQ
+minvalue 1
+maxvalue 999999
+start with 23
+increment by 1
+cache 20
+order;

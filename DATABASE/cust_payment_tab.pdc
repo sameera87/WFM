@@ -1,0 +1,46 @@
+-- Create table
+create table CUST_PAYMENT_TAB
+(
+  cust_payment_no NUMBER not null,
+  pay_method_id   VARCHAR2(20) not null,
+  payment_amount  NUMBER default 0 not null,
+  notes           VARCHAR2(1000),
+  pay_status      NUMBER default 0 not null,
+  cust_inv_no     NUMBER not null,
+  created_date    DATE default SYSDATE not null,
+  modified_date   DATE default SYSDATE not null,
+  rowversion      DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table CUST_PAYMENT_TAB
+  add constraint CUST_PAYMENT_TAB_PK primary key (CUST_PAYMENT_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table CUST_PAYMENT_TAB
+  add constraint CUST_PAYMENT_TAB_FK1 foreign key (CUST_INV_NO)
+  references CUST_INV_TAB (CUST_INV_NO) on delete cascade;
+alter table CUST_PAYMENT_TAB
+  add constraint CUST_PAYMENT_TAB_FK2 foreign key (PAY_METHOD_ID)
+  references PAYMENT_METHOD_TAB (PAY_METHOD_ID);

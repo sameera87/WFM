@@ -1,0 +1,37 @@
+-- Create table
+create table DAY_TYPE_TAB
+(
+  day_type_id       VARCHAR2(20) not null,
+  description       VARCHAR2(100),
+  work_time_per_day as (0),
+  created_date      DATE default SYSDATE not null,
+  modified_date     DATE default SYSDATE not null,
+  rowversion        DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table DAY_TYPE_TAB
+  add constraint DAY_TYPE_TAB_PK primary key (DAY_TYPE_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

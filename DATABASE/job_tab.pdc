@@ -1,0 +1,84 @@
+-- Create table
+create table JOB_TAB
+(
+  job_no         NUMBER not null,
+  job_desc       VARCHAR2(200) not null,
+  company_id     VARCHAR2(100) not null,
+  customer_id    VARCHAR2(20),
+  object_id      VARCHAR2(20),
+  created_date   DATE default SYSDATE not null,
+  modified_date  DATE default SYSDATE not null,
+  rowversion     DATE default SYSDATE not null,
+  req_start      DATE,
+  req_finish     DATE,
+  sla_id         VARCHAR2(20),
+  sla_req_start  DATE,
+  sla_req_finish DATE,
+  competancy_req VARCHAR2(20),
+  executed_by    VARCHAR2(20) not null,
+  planned_hours  NUMBER default 0 not null,
+  plan_start     DATE,
+  plan_finish    DATE,
+  cost           NUMBER default 0 not null,
+  cost_amount    NUMBER not null,
+  markup         NUMBER default 0 not null,
+  auto_schedule  NUMBER default 1 not null,
+  job_scheduled  NUMBER default 0 not null,
+  status         NUMBER default 0 not null,
+  serial_no      VARCHAR2(20),
+  fault_type     VARCHAR2(20),
+  job_add_id     NUMBER
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Add comments to the columns 
+comment on column JOB_TAB.competancy_req
+  is 'COMPETANCY_ID';
+comment on column JOB_TAB.executed_by
+  is 'EMPLOYEE_ID';
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table JOB_TAB
+  add constraint JOB_TAB_PK primary key (JOB_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table JOB_TAB
+  add constraint JOB_TAB_FK1 foreign key (COMPANY_ID)
+  references COMPANY_TAB (COMPANY_ID) on delete cascade;
+alter table JOB_TAB
+  add constraint JOB_TAB_FK2 foreign key (CUSTOMER_ID)
+  references CUSTOMER_TAB (CUSTOMER_ID) on delete set null;
+alter table JOB_TAB
+  add constraint JOB_TAB_FK3 foreign key (OBJECT_ID, SERIAL_NO)
+  references OBJECT_TAB (OBJECT_ID, SERIAL_NO) on delete set null;
+alter table JOB_TAB
+  add constraint JOB_TAB_FK4 foreign key (SLA_ID)
+  references CUST_SLA_TAB (SLA_ID) on delete set null;
+alter table JOB_TAB
+  add constraint JOB_TAB_FK5 foreign key (FAULT_TYPE)
+  references FAULT_TYPE_TAB (FAULT_TYPE) on delete set null;
+alter table JOB_TAB
+  add constraint JOB_TAB_FK6 foreign key (JOB_ADD_ID)
+  references ADDRESS_TAB (ADDRESS_ID) on delete set null;
+alter table JOB_TAB
+  add constraint JOB_TAB_FK7 foreign key (COMPETANCY_REQ)
+  references COMPETANCY_TAB (COMPETANCY_ID) on delete set null;

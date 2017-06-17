@@ -1,0 +1,37 @@
+-- Create table
+create table COMPETENCY_LEVEL_TAB
+(
+  COMP_LEVEL_LINE_NO NUMBER not null,
+  COMP_LEVEL_NAME    VARCHAR2(30) not null,
+  COMP_LEVEL_DESC    VARCHAR2(100),
+  CREATED_DATE       DATE default SYSDATE not null,
+  MODIFIED_DATE      DATE default SYSDATE not null,
+  ROWVERSION         DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table COMPETENCY_LEVEL_TAB
+  add constraint COMPETENCY_LEVEL_TAB_PK primary key (COMP_LEVEL_LINE_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

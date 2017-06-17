@@ -1,0 +1,45 @@
+-- Create table
+create table OBJECT_TAB
+(
+  object_id     VARCHAR2(20) not null,
+  description   VARCHAR2(100),
+  serial_no     VARCHAR2(20) not null,
+  obj_type      VARCHAR2(20),
+  customer_id   VARCHAR2(20),
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table OBJECT_TAB
+  add constraint OBJECT_TAB_PK primary key (OBJECT_ID, SERIAL_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table OBJECT_TAB
+  add constraint OBJECT_TAB_FK1 foreign key (CUSTOMER_ID)
+  references CUSTOMER_TAB (CUSTOMER_ID) on delete set null;
+alter table OBJECT_TAB
+  add constraint OBJECT_TAB_FK2 foreign key (OBJ_TYPE)
+  references OBJ_TYPE_TAB (OBJ_TYPE) on delete set null;

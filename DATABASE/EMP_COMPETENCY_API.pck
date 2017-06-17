@@ -1,0 +1,702 @@
+create or replace package EMP_COMPETENCY_API is
+
+  PROCEDURE New_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Unpack_(attr_ IN VARCHAR2,
+                    rec_  IN OUT emp_competancy_tab%ROWTYPE,
+                    rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Insert_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY emp_competancy_tab%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Pack_(rec_  IN emp_competancy_tab%ROWTYPE,
+                  attr_ IN OUT VARCHAR2);
+
+  PROCEDURE Modify_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Check_Update_(newrec_ IN OUT emp_competancy_tab%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Get_(emp_comp_line_no_ IN NUMBER,
+                 old_rec_          IN OUT emp_competancy_tab%ROWTYPE,
+                 rslt_             IN OUT VARCHAR2);
+
+  PROCEDURE Delete_(emp_comp_line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Update_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY emp_competancy_tab%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Check_Insert_(newrec_ IN OUT emp_competancy_tab%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Check_Exist_(emp_comp_line_no_ IN NUMBER,
+                         rslt_             IN OUT VARCHAR2);
+
+  PROCEDURE Get_Emp_Competancy_Line(comp_id_                  OUT VARCHAR2,
+                                    emp_id_                   OUT VARCHAR2,
+                                    default_emp_comp_line_no_ OUT NUMBER,
+                                    comp_level_line_no_       OUT NUMBER,
+                                    createdDate_              OUT DATE,
+                                    modifiedDate_             OUT DATE,
+                                    rowversion_               OUT DATE,
+                                    rslt_                     OUT VARCHAR2,
+                                    emp_comp_line_no_         IN NUMBER);
+
+  PROCEDURE Check_Delete_(emp_comp_line_no_ IN NUMBER,
+                          rslt_             IN OUT VARCHAR2);
+
+  PROCEDURE Get_Next_Line_Id(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2);
+
+  FUNCTION Check_Default_Line_Exist(emp_id_ IN VARCHAR2) RETURN VARCHAR2;
+
+  FUNCTION Check_Competency_Exist(emp_id_  IN VARCHAR2,
+                                  comp_id_ IN VARCHAR2) RETURN VARCHAR2;
+
+  FUNCTION Get_Emp_Id(emp_comp_line_no_ IN NUMBER) RETURN VARCHAR2;
+
+  FUNCTION Get_Default_Emp_Competency(emp_id_ IN VARCHAR2) RETURN VARCHAR2;
+
+  FUNCTION Get_Default_Emp_Comp_level(emp_id_ IN VARCHAR2) RETURN VARCHAR2;
+
+  FUNCTION Get_Emp_Comp_Id(emp_comp_line_no_ IN NUMBER) RETURN VARCHAR2;
+
+  FUNCTION Check_Competency_Level_Exist(emp_id_       IN VARCHAR2,
+                                        comp_id_      IN VARCHAR2,
+                                        comp_level_no IN NUMBER)
+    RETURN VARCHAR2;
+    
+  FUNCTION Get_Def_Emp_Comp_Line_No(emp_id_ IN VARCHAR2) RETURN NUMBER;
+
+  PROCEDURE Set_Default(emp_comp_line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2);
+
+end EMP_COMPETENCY_API;
+/
+create or replace package body EMP_COMPETENCY_API is
+
+  PROCEDURE New_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_ EMP_COMPETANCY_TAB%ROWTYPE;
+  BEGIN
+    Unpack_(attr_, rec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Check_Insert_(rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        Insert_(attr_, rec_, rslt_);
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully added the competancy line to the employee.';
+        END IF;
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END New_;
+
+  PROCEDURE Unpack_(attr_ IN VARCHAR2,
+                    rec_  IN OUT EMP_COMPETANCY_TAB%ROWTYPE,
+                    rslt_ IN OUT VARCHAR2) IS
+    ptr_   NUMBER;
+    name_  VARCHAR2(30);
+    value_ VARCHAR2(1000);
+  BEGIN
+    WHILE (System_API.Get_Next_From_Attr(attr_, ptr_, name_, value_)) LOOP
+      rslt_ := name_;
+      IF name_ = 'COMPETANCY_ID' THEN
+        rec_.competancy_id := value_;
+      ELSIF name_ = 'EMPLOYEE_ID' THEN
+        rec_.employee_id := value_;
+      ELSIF name_ = 'EMP_COMP_LINE_NO' THEN
+        rec_.emp_comp_line_no := TO_NUMBER(value_);
+      ELSIF name_ = 'DEFAULT_EMP_COMP' THEN
+        rec_.default_emp_comp := TO_NUMBER(value_);
+      ELSIF name_ = 'COMP_LEVEL_LINE_NO' THEN
+        rec_.comp_level_line_no := TO_NUMBER(value_);
+      ELSIF name_ = 'CREATED_DATE' THEN
+        rec_.created_date := TO_DATE(value_, 'dd-MM-yyyy');
+      ELSIF name_ = 'MODIFIED_DATE' THEN
+        rec_.modified_date := TO_DATE(value_, 'dd-MM-yyyy');
+      ELSIF name_ = 'ROWVERSION' THEN
+        rec_.rowversion := TO_DATE(value_, 'MM/DD/YYYY HH:MI:SS AM');
+      ELSE
+        rslt_ := 'Attr error: Unknown attribute found: ' || name_ || ' - ' ||
+                 value_;
+      END IF;
+    END LOOP;
+    rslt_ := 'TRUE';
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Unpack_;
+
+  PROCEDURE Check_Insert_(newrec_ IN OUT EMP_COMPETANCY_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2) IS
+  
+  BEGIN
+    Check_Exist_(newrec_.emp_comp_line_no, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      rslt_ := 'Error: Competancy ID ' || newrec_.competancy_id ||
+               ' already exists for employee ' || newrec_.employee_id || '.';
+    ELSE
+      rslt_ := 'TRUE';
+    END IF;
+  
+    IF newrec_.emp_comp_line_no IS NULL THEN
+      rslt_ := 'Error: Employee Competancy Line No cannot be Empty.';
+    END IF;
+    IF (Check_Default_Line_Exist(newrec_.employee_id) = 'TRUE') THEN
+      rslt_ := 'Error: A default competency line for the employee ' ||
+               newrec_.employee_id || ' already exists.';
+    END IF;
+    IF (Check_Competency_Exist(newrec_.employee_id, newrec_.competancy_id) =
+       'TRUE') THEN
+      rslt_ := 'Error: A competency line of type ' ||
+               Competancy_Api.Get_Comp_Name(newrec_.competancy_id) ||
+               ' already exists for the employee ' || newrec_.employee_id;
+    END IF;
+    IF (Check_Competency_Level_Exist(newrec_.employee_id,
+                                     newrec_.competancy_id,
+                                     newrec_.comp_level_line_no) = 'TRUE') THEN
+      rslt_ := 'Error: A competency line of type ' ||
+               Competancy_Api.Get_Comp_Name(newrec_.competancy_id) ||
+               ' and competency level ' ||
+               COMPETENCY_LEVEL_API.Get_Comp_Level_Name(newrec_.comp_level_line_no) ||
+               ' already exists for the employee ' || newrec_.employee_id;
+    END IF;
+    IF (newrec_.competancy_id IS NULL AND
+       newrec_.comp_level_line_no IS NOT NULL) THEN
+      rslt_ := 'Error: Competency Level cannot have a value when the Competency is null;';
+    END IF;
+  
+    --check exist for referrenced columns
+    COMPETANCY_API.Check_Exist_(newrec_.competancy_id, rslt_);
+    IF rslt_ = 'FALSE' THEN
+      rslt_ := 'Error: Competancy does not exist.';
+    END IF;
+    COMPETENCY_LEVEL_API.Check_Exist_(newrec_.comp_level_line_no, rslt_);
+    IF rslt_ = 'FALSE' THEN
+      rslt_ := 'Error: Competancy Level does not exist. ';
+    END IF;
+    EMPLOYEE_API.Check_Exist_(newrec_.employee_id, rslt_);
+    IF rslt_ = 'FALSE' THEN
+      rslt_ := 'Error: Employee does not exist. ';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Insert_;
+
+  PROCEDURE Check_Exist_(emp_comp_line_no_ IN NUMBER,
+                         rslt_             IN OUT VARCHAR2) IS
+  
+    tmp_ NUMBER;
+    CURSOR chk_emp_comp IS
+      SELECT 1
+        FROM EMP_COMPETANCY_TAB i
+       WHERE i.emp_comp_line_no = emp_comp_line_no_;
+  
+  BEGIN
+    OPEN chk_emp_comp;
+    FETCH chk_emp_comp
+      INTO tmp_;
+    IF chk_emp_comp%FOUND THEN
+      CLOSE chk_emp_comp;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE chk_emp_comp;
+      rslt_ := 'FALSE';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Exist_;
+
+  PROCEDURE Insert_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY EMP_COMPETANCY_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+    INSERT INTO EMP_COMPETANCY_TAB
+      (COMPETANCY_ID,
+       EMPLOYEE_ID,
+       EMP_COMP_LINE_NO,
+       DEFAULT_EMP_COMP,
+       COMP_LEVEL_LINE_NO)
+    VALUES
+      (newrec_.competancy_id,
+       newrec_.employee_id,
+       newrec_.emp_comp_line_no,
+       newrec_.default_emp_comp,
+       newrec_.comp_level_line_no)
+    RETURNING CREATED_DATE, MODIFIED_DATE, ROWVERSION INTO newrec_.created_date, newrec_.modified_date, newrec_.rowversion;
+    COMMIT;
+  
+    rslt_ := 'TRUE';
+    attr_ := '';
+    Pack_(newrec_, attr_);
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Insert_;
+
+  PROCEDURE Pack_(rec_  IN EMP_COMPETANCY_TAB%ROWTYPE,
+                  attr_ IN OUT VARCHAR2) IS
+  BEGIN
+    System_API.Add_To_Attr('COMPETANCY_ID', rec_.competancy_id, attr_);
+    System_API.Add_To_Attr('EMPLOYEE_ID', rec_.employee_id, attr_);
+    System_API.Add_To_Attr('EMP_COMP_LINE_NO',
+                           to_char(rec_.emp_comp_line_no),
+                           attr_);
+    System_API.Add_To_Attr('DEFAULT_EMP_COMP',
+                           to_char(rec_.default_emp_comp),
+                           attr_);
+    System_API.Add_To_Attr('COMP_LEVEL_LINE_NO',
+                           to_char(rec_.comp_level_line_no),
+                           attr_);
+    System_API.Add_To_Attr('CREATED_DATE',
+                           to_char(rec_.created_date, 'dd-MM-yyyy'),
+                           attr_);
+    System_API.Add_To_Attr('MODIFIED_DATE',
+                           to_char(rec_.modified_date, 'dd-MM-yyyy'),
+                           attr_);
+    System_API.Add_To_Attr('ROWVERSION',
+                           to_char(rec_.rowversion,
+                                   'MM/DD/YYYY HH:MI:SS AM'),
+                           attr_);
+  
+  END Pack_;
+
+  PROCEDURE Modify_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_ EMP_COMPETANCY_TAB%ROWTYPE;
+  BEGIN
+    Unpack_(attr_, rec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Check_Update_(rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        Update_(attr_, rec_, rslt_);
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully Updated the employee competancy line.';
+        END IF;
+      END IF;
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Modify_;
+
+  PROCEDURE Check_Update_(newrec_ IN OUT EMP_COMPETANCY_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2) IS
+    oldrec_ EMP_COMPETANCY_TAB%ROWTYPE;
+  
+  BEGIN
+    Get_(newrec_.emp_comp_line_no, oldrec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      IF newrec_.rowversion != oldrec_.rowversion THEN
+        rslt_ := 'Error: Record has been updated by another user. Please refresh the window and try again.';
+      END IF;
+      IF (Check_Default_Line_Exist(newrec_.employee_id) = 'TRUE') THEN
+        rslt_ := 'Error: A default competency line for the employee ' ||
+                 newrec_.employee_id || ' already exists.';
+      END IF;
+      IF (Check_Competency_Exist(newrec_.employee_id, newrec_.competancy_id) =
+         'TRUE') THEN
+        rslt_ := 'Error: A competency line of type ' ||
+                 Competancy_Api.Get_Comp_Name(newrec_.competancy_id) ||
+                 ' already exists for the employee ' || newrec_.employee_id;
+      END IF;
+      IF (Check_Competency_Level_Exist(newrec_.employee_id,
+                                       newrec_.competancy_id,
+                                       newrec_.comp_level_line_no) =
+         'TRUE') THEN
+        rslt_ := 'Error: A competency line of type ' ||
+                 Competancy_Api.Get_Comp_Name(newrec_.competancy_id) ||
+                 ' and competency level ' ||
+                 COMPETENCY_LEVEL_API.Get_Comp_Level_Name(newrec_.comp_level_line_no) ||
+                 ' already exists for the employee ' || newrec_.employee_id;
+      END IF;
+      IF (newrec_.competancy_id IS NULL AND
+         newrec_.comp_level_line_no IS NOT NULL) THEN
+        rslt_ := 'Error: Competency Level cannot have a value when the Competency is null;';
+      END IF;
+    
+      --check exist for referrenced columns
+      COMPETANCY_API.Check_Exist_(newrec_.competancy_id, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: Competancy does not exist.';
+      END IF;
+      COMPETENCY_LEVEL_API.Check_Exist_(newrec_.comp_level_line_no, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: Competancy Level does not exist. ';
+      END IF;
+      EMPLOYEE_API.Check_Exist_(newrec_.employee_id, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: Employee does not exist. ';
+      END IF;
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Update_;
+
+  PROCEDURE Get_(emp_comp_line_no_ IN NUMBER,
+                 old_rec_          IN OUT EMP_COMPETANCY_TAB%ROWTYPE,
+                 rslt_             IN OUT VARCHAR2) IS
+  
+    check_flag VARCHAR2(10);
+    CURSOR get_emp_competancy IS
+      SELECT *
+        FROM EMP_COMPETANCY_TAB i
+       WHERE i.emp_comp_line_no = emp_comp_line_no_;
+  
+  BEGIN
+    Check_Exist_(emp_comp_line_no_, check_flag);
+    IF check_flag = 'TRUE' THEN
+      OPEN get_emp_competancy;
+      FETCH get_emp_competancy
+        INTO old_rec_;
+      CLOSE get_emp_competancy;
+      rslt_ := 'TRUE';
+    ELSE
+      rslt_ := 'Error: Cannot find the employee competency line.';
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_;
+
+  PROCEDURE Update_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY EMP_COMPETANCY_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+  
+    newrec_.rowversion := sysdate;
+    UPDATE EMP_COMPETANCY_TAB i
+       SET ROW = newrec_
+     WHERE i.emp_comp_line_no = newrec_.emp_comp_line_no;
+    COMMIT;
+  
+    rslt_ := 'TRUE';
+    attr_ := '';
+    Pack_(newrec_, attr_);
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Update_;
+
+  PROCEDURE Delete_(emp_comp_line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2) IS
+  
+  BEGIN
+    Check_Delete_(emp_comp_line_no_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      DELETE FROM EMP_COMPETANCY_TAB i
+       where i.emp_comp_line_no = emp_comp_line_no_;
+      rslt_ := 'Successfully deleted the employee competancy line.';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Delete_;
+
+  PROCEDURE Get_Emp_Competancy_Line(comp_id_                  OUT VARCHAR2,
+                                    emp_id_                   OUT VARCHAR2,
+                                    default_emp_comp_line_no_ OUT NUMBER,
+                                    comp_level_line_no_       OUT NUMBER,
+                                    createdDate_              OUT DATE,
+                                    modifiedDate_             OUT DATE,
+                                    rowversion_               OUT DATE,
+                                    rslt_                     OUT VARCHAR2,
+                                    emp_comp_line_no_         IN NUMBER) IS
+    dummy number := 0;
+  
+  BEGIN
+    IF (emp_comp_line_no_ IS NULL) THEN
+      RETURN;
+    END IF;
+  
+    SELECT 1
+      into dummy
+      from EMP_COMPETANCY_TAB i
+     where i.emp_comp_line_no = emp_comp_line_no_;
+  
+    if dummy = 0 then
+      raise no_data_found;
+      return;
+    end if;
+  
+    SELECT i.competancy_id,
+           i.employee_id,
+           i.default_emp_comp,
+           i.comp_level_line_no,
+           i.created_date,
+           i.modified_date,
+           i.rowversion
+      INTO comp_id_,
+           emp_id_,
+           default_emp_comp_line_no_,
+           comp_level_line_no_,
+           createdDate_,
+           modifiedDate_,
+           rowversion_
+      FROM EMP_COMPETANCY_TAB i
+     WHERE i.emp_comp_line_no = emp_comp_line_no_;
+    rslt_ := 'TRUE';
+  
+  EXCEPTION
+    WHEN no_data_found THEN
+      rslt_ := 'No data found';
+    WHEN others THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_Emp_Competancy_Line;
+
+  FUNCTION Get_Emp_Id(emp_comp_line_no_ IN NUMBER) RETURN VARCHAR2 IS
+  
+    temp_ EMP_COMPETANCY_TAB.EMPLOYEE_ID%TYPE;
+  BEGIN
+    IF (emp_comp_line_no_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    SELECT s.employee_id
+      INTO temp_
+      FROM EMP_COMPETANCY_TAB s
+     WHERE s.emp_comp_line_no = emp_comp_line_no_;
+    RETURN temp_;
+  EXCEPTION
+    WHEN no_data_found THEN
+      RETURN NULL;
+    
+  END Get_Emp_Id;
+
+  PROCEDURE Check_Delete_(emp_comp_line_no_ IN NUMBER,
+                          rslt_             IN OUT VARCHAR2) IS
+  
+    temp_ NUMBER := 0;
+  
+  BEGIN
+  
+    Check_Exist_(emp_comp_line_no_, rslt_);
+    IF (rslt_ = 'TRUE') THEN
+      IF (emp_comp_line_no_ IS NULL) THEN
+        rslt_ := 'Error: Employee Competence Line No must have a value.';
+      END IF;
+    
+      SELECT 1
+        INTO temp_
+        FROM JOB_TAB
+       WHERE executed_by = Get_Emp_Id(emp_comp_line_no_)
+         AND COMPETANCY_REQ = Get_Emp_Comp_Id(emp_comp_line_no_);
+    
+      IF (temp_ IS NOT NULL) THEN
+        rslt_ := 'Error: Employee ' || Get_Emp_Id(emp_comp_line_no_) ||
+                 ' with competency ' ||
+                 competancy_api.Get_Comp_Name(Get_Emp_Comp_Id(emp_comp_line_no_)) ||
+                 ' is connected with job(s) and hence cannot be deleted.';
+      ELSE
+        rslt_ := 'TRUE';
+      END IF;
+    END IF;
+  END Check_Delete_;
+
+  PROCEDURE Get_Next_Line_Id(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2) IS
+  BEGIN
+    next_id_ := WFMS_EMP_COMP_LINE_NO_SEQ.NEXTVAL;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_Next_Line_Id;
+
+  FUNCTION Check_Default_Line_Exist(emp_id_ IN VARCHAR2) RETURN VARCHAR2 IS
+  
+    dummy_ NUMBER := 0;
+    rslt_  VARCHAR2(10) := '';
+    CURSOR default_comp_exist IS
+      SELECT 1
+        FROM EMP_COMPETANCY_TAB t
+       WHERE t.employee_id = emp_id_
+         AND t.default_emp_comp = 1;
+  
+  BEGIN
+  
+    OPEN default_comp_exist;
+    FETCH default_comp_exist
+      INTO dummy_;
+    IF (default_comp_exist%FOUND) THEN
+      CLOSE default_comp_exist;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE default_comp_exist;
+      rslt_ := 'FALSE';
+    END IF;
+  
+    RETURN rslt_;
+  
+  END Check_Default_Line_Exist;
+
+  FUNCTION Check_Competency_Exist(emp_id_  IN VARCHAR2,
+                                  comp_id_ IN VARCHAR2) RETURN VARCHAR2 IS
+  
+    dummy_ NUMBER := 0;
+    rslt_  VARCHAR2(10) := '';
+    CURSOR emp_comp_exist IS
+      SELECT 1
+        FROM EMP_COMPETANCY_TAB t
+       WHERE t.employee_id = emp_id_
+         AND t.competancy_id = comp_id_;
+  BEGIN
+  
+    OPEN emp_comp_exist;
+    FETCH emp_comp_exist
+      INTO dummy_;
+    IF (emp_comp_exist%FOUND) THEN
+      CLOSE emp_comp_exist;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE emp_comp_exist;
+      rslt_ := 'FALSE';
+    END IF;
+  
+    RETURN rslt_;
+  
+  END Check_Competency_Exist;
+
+  FUNCTION Get_Default_Emp_Competency(emp_id_ IN VARCHAR2) RETURN VARCHAR2 IS
+  
+    temp_ EMP_COMPETANCY_TAB.Competancy_Id%TYPE;
+  BEGIN
+    IF (emp_id_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    SELECT i.competancy_id
+      INTO temp_
+      FROM EMP_COMPETANCY_TAB i
+     WHERE i.employee_id = emp_id_
+       AND i.default_emp_comp = 1;
+    RETURN temp_;
+  EXCEPTION
+    WHEN no_data_found THEN
+      RETURN NULL;
+    
+  END Get_Default_Emp_Competency;
+
+  FUNCTION Get_Emp_Comp_Id(emp_comp_line_no_ IN NUMBER) RETURN VARCHAR2 IS
+  
+    temp_ EMP_COMPETANCY_TAB.COMPETANCY_ID%TYPE;
+  BEGIN
+    IF (emp_comp_line_no_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    SELECT i.competancy_id
+      INTO temp_
+      FROM EMP_COMPETANCY_TAB i
+     WHERE i.emp_comp_line_no = emp_comp_line_no_;
+    RETURN temp_;
+  EXCEPTION
+    WHEN no_data_found THEN
+      RETURN NULL;
+    
+  END Get_Emp_Comp_Id;
+
+  FUNCTION Get_Default_Emp_Comp_level(emp_id_ IN VARCHAR2) RETURN VARCHAR2 IS
+  
+    temp_ EMP_COMPETANCY_TAB.COMP_LEVEL_LINE_NO%TYPE;
+  BEGIN
+    IF (emp_id_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    SELECT i.comp_level_line_no
+      INTO temp_
+      FROM EMP_COMPETANCY_TAB i
+     WHERE i.employee_id = emp_id_
+       AND i.default_emp_comp = 1;
+    RETURN temp_;
+  EXCEPTION
+    WHEN no_data_found THEN
+      RETURN NULL;
+    
+  END Get_Default_Emp_Comp_level;
+
+  FUNCTION Check_Competency_Level_Exist(emp_id_       IN VARCHAR2,
+                                        comp_id_      IN VARCHAR2,
+                                        comp_level_no IN NUMBER)
+    RETURN VARCHAR2 IS
+    dummy_ NUMBER := 0;
+    rslt_  VARCHAR2(10) := '';
+    CURSOR emp_comp_exist IS
+      SELECT 1
+        FROM EMP_COMPETANCY_TAB t
+       WHERE t.employee_id = emp_id_
+         AND t.competancy_id = comp_id_
+         AND t.comp_level_line_no = comp_level_no;
+  BEGIN
+  
+    OPEN emp_comp_exist;
+    FETCH emp_comp_exist
+      INTO dummy_;
+    IF (emp_comp_exist%FOUND) THEN
+      CLOSE emp_comp_exist;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE emp_comp_exist;
+      rslt_ := 'FALSE';
+    END IF;
+  
+    RETURN rslt_;
+  
+  END Check_Competency_Level_Exist;
+
+  FUNCTION Get_Def_Emp_Comp_Line_No(emp_id_ IN VARCHAR2) RETURN NUMBER IS
+  
+    temp_ NUMBER;
+  
+  BEGIN
+  
+    IF (emp_id_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    SELECT s.emp_comp_line_no
+      INTO temp_
+      FROM EMP_COMPETANCY_TAB s
+     WHERE s.employee_id = emp_id_
+       AND s.default_emp_comp = 1;
+    RETURN temp_;
+  
+  EXCEPTION
+    WHEN no_data_found THEN
+      RETURN NULL;
+    
+  END Get_Def_Emp_Comp_Line_No;
+
+  PROCEDURE Set_Default(emp_comp_line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2) IS
+  
+    emp_id_               VARCHAR2(20);
+    def_emp_comp_line_no_ NUMBER;
+  
+  BEGIN
+    emp_id_ := Get_Emp_Id(emp_comp_line_no_);
+    IF (Check_Default_Line_Exist(emp_id_) = 'TRUE') THEN
+      def_emp_comp_line_no_ := Get_Def_Emp_Comp_Line_No(emp_id_);
+      IF (emp_comp_line_no_ != def_emp_comp_line_no_) THEN
+        UPDATE EMP_COMPETANCY_TAB i
+           SET i.default_emp_comp = 0
+         WHERE i.emp_comp_line_no = def_emp_comp_line_no_;
+        COMMIT;
+      END IF;
+    END IF;
+    UPDATE EMP_COMPETANCY_TAB i
+       SET i.default_emp_comp = 1
+     WHERE i.emp_comp_line_no = emp_comp_line_no_;
+    COMMIT;
+    rslt_ := 'TRUE';
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+    
+  END Set_Default;
+
+end EMP_COMPETENCY_API;
+/

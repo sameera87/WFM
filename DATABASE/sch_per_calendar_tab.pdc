@@ -1,0 +1,45 @@
+-- Create table
+create table SCH_PER_CALENDAR_TAB
+(
+  spc_line_no   NUMBER not null,
+  schedule_id   VARCHAR2(20) not null,
+  start_date    DATE not null,
+  end_date      DATE not null,
+  calendar_id   VARCHAR2(20) not null,
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table SCH_PER_CALENDAR_TAB
+  add constraint SCH_PER_CALENDAR_TAB_PK primary key (SPC_LINE_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table SCH_PER_CALENDAR_TAB
+  add constraint SCH_PER_CALENDAR_TAB_FK1 foreign key (CALENDAR_ID)
+  references WORK_TIME_CALENDAR_TAB (CALENDAR_ID) on delete cascade;
+alter table SCH_PER_CALENDAR_TAB
+  add constraint SCH_PER_CALENDAR_TAB_FK2 foreign key (SCHEDULE_ID)
+  references SCHEDULE_TAB (SCHEDULE_ID) on delete cascade;

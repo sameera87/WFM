@@ -1,0 +1,41 @@
+-- Create table
+create table MAP_LOCATION_TAB
+(
+  map_loc_id    NUMBER not null,
+  loc_latitude  VARCHAR2(20) not null,
+  loc_longitude VARCHAR2(20) not null,
+  ad_address_id NUMBER not null,
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table MAP_LOCATION_TAB
+  add constraint MAP_LOCATION_TAB_PK primary key (MAP_LOC_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table MAP_LOCATION_TAB
+  add constraint MAP_LOCATION_TAB_FK foreign key (AD_ADDRESS_ID)
+  references ADDRESS_TAB (ADDRESS_ID) on delete cascade;

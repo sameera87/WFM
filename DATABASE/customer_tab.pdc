@@ -1,0 +1,45 @@
+-- Create table
+create table CUSTOMER_TAB
+(
+  customer_id    VARCHAR2(20) not null,
+  description    VARCHAR2(100),
+  email          VARCHAR2(100) not null,
+  phone_no1      VARCHAR2(20) not null,
+  phone_no2      VARCHAR2(20),
+  contact_person VARCHAR2(100),
+  address_id     NUMBER,
+  company_id     VARCHAR2(20),
+  created_date   DATE default SYSDATE not null,
+  modified_date  DATE default SYSDATE not null,
+  rowversion     DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table CUSTOMER_TAB
+  add constraint CUSTOMER_TAB_PK primary key (CUSTOMER_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table CUSTOMER_TAB
+  add constraint CUSTOMER_TAB_FK1 foreign key (COMPANY_ID)
+  references COMPANY_TAB (COMPANY_ID) on delete set null;

@@ -1,0 +1,43 @@
+-- Create table
+create table SALARY_INFO_TAB
+(
+  salary_id     NUMBER not null,
+  value1        NUMBER default 0.00 not null,
+  value2        NUMBER default 0 not null,
+  deductions    NUMBER default 0,
+  allowances    NUMBER default 0,
+  employee_id   VARCHAR2(20) not null,
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table SALARY_INFO_TAB
+  add constraint SALARY_INFO_TAB_PK primary key (SALARY_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table SALARY_INFO_TAB
+  add constraint SALARY_INFO_TAB_FK foreign key (EMPLOYEE_ID)
+  references EMPLOYEE_TAB (EMPLOYEE_ID) on delete cascade;

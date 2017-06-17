@@ -1,0 +1,411 @@
+create or replace package COMPETANCY_API is
+
+  PROCEDURE New_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Unpack_(attr_ IN VARCHAR2,
+                    rec_  IN OUT COMPETANCY_TAB%ROWTYPE,
+                    rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Insert_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY COMPETANCY_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Pack_(rec_ IN COMPETANCY_TAB%ROWTYPE, attr_ IN OUT VARCHAR2);
+
+  PROCEDURE Modify_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Check_Update_(newrec_ IN OUT COMPETANCY_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Get_(compId_  IN VARCHAR2,
+                 old_rec_ IN OUT COMPETANCY_TAB%ROWTYPE,
+                 rslt_    IN OUT VARCHAR2);
+
+  PROCEDURE Delete_(compId_ IN VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Update_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY COMPETANCY_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Check_Insert_(newrec_ IN OUT COMPETANCY_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Check_Exist_(compId_ IN VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Get_Competancy(compName_     OUT VARCHAR2,
+                           compDesc_     OUT VARCHAR2,
+                           createdDate_  OUT DATE,
+                           modifiedDate_ OUT DATE,
+                           rowversion_   OUT DATE,
+                           rslt_         OUT VARCHAR2,
+                           compId_       IN VARCHAR2);
+
+  FUNCTION Get_Comp_Name(compId_ IN VARCHAR2) RETURN VARCHAR2;
+
+  FUNCTION Get_Comp_Desc(compId_ IN VARCHAR2) RETURN VARCHAR2;
+  
+  PROCEDURE Check_Delete_(compId_ IN VARCHAR2, rslt_ IN OUT VARCHAR2);
+  
+  PROCEDURE Get_Next_Line_Id(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2);
+  
+  FUNCTION Check_Comp_Name_Exist(comp_name_ IN VARCHAR2) RETURN VARCHAR2;
+
+end COMPETANCY_API;
+/
+create or replace package body COMPETANCY_API is
+
+  PROCEDURE New_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_ COMPETANCY_TAB%ROWTYPE;
+  BEGIN
+    Unpack_(attr_, rec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Check_Insert_(rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        Insert_(attr_, rec_, rslt_);
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully saved the competancy.';
+        END IF;
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END New_;
+
+  PROCEDURE Unpack_(attr_ IN VARCHAR2,
+                    rec_  IN OUT COMPETANCY_TAB%ROWTYPE,
+                    rslt_ IN OUT VARCHAR2) IS
+    ptr_   NUMBER;
+    name_  VARCHAR2(30);
+    value_ VARCHAR2(1000);
+  BEGIN
+    WHILE (System_API.Get_Next_From_Attr(attr_, ptr_, name_, value_)) LOOP
+      rslt_ := name_;
+      IF name_ = 'COMPETANCY_ID' THEN
+        rec_.competancy_id := value_;
+      ELSIF name_ = 'COMP_NAME' THEN
+        rec_.comp_name := value_;
+      ELSIF name_ = 'COMP_DESC' THEN
+        rec_.comp_desc := value_;
+      ELSIF name_ = 'CREATED_DATE' THEN
+        rec_.created_date := TO_DATE(value_, 'dd-MM-yyyy');
+      ELSIF name_ = 'MODIFIED_DATE' THEN
+        rec_.modified_date := TO_DATE(value_, 'dd-MM-yyyy');
+      ELSIF name_ = 'ROWVERSION' THEN
+        rec_.rowversion := TO_DATE(value_, 'MM/DD/YYYY HH:MI:SS AM');
+      ELSE
+        rslt_ := 'Attr error: Unknown attribute found: ' || name_ || ' - ' ||
+                 value_;
+      END IF;
+    END LOOP;
+    rslt_ := 'TRUE';
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Unpack_;
+
+  PROCEDURE Check_Insert_(newrec_ IN OUT COMPETANCY_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2) IS
+  
+  BEGIN
+    Check_Exist_(newrec_.competancy_id, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      rslt_ := 'Error: Competancy ID ' || newrec_.competancy_id ||
+               ' already exists.';
+    ELSE
+      rslt_ := 'TRUE';
+    END IF;
+    IF newrec_.competancy_id IS NULL THEN
+      rslt_ := 'Error: Competancy ID cannot be Empty.';
+    END IF;
+    IF (Check_Comp_Name_Exist(newrec_.comp_name) = 'TRUE') THEN
+      rslt_ := 'Error: The Competency Name already Exists.';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Insert_;
+
+  PROCEDURE Check_Exist_(compId_ IN VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+  
+    tmp_ NUMBER;
+    CURSOR chk_competancy IS
+      SELECT 1 FROM COMPETANCY_TAB i WHERE i.competancy_id = compId_;
+  
+  BEGIN
+    OPEN chk_competancy;
+    FETCH chk_competancy
+      INTO tmp_;
+    IF chk_competancy%FOUND THEN
+      CLOSE chk_competancy;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE chk_competancy;
+      rslt_ := 'FALSE';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Exist_;
+
+  PROCEDURE Insert_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY COMPETANCY_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+    INSERT INTO COMPETANCY_TAB
+      (COMPETANCY_ID, COMP_NAME, COMP_DESC)
+    VALUES
+      (newrec_.competancy_id, newrec_.comp_name, newrec_.comp_desc)
+    RETURNING CREATED_DATE, MODIFIED_DATE, ROWVERSION INTO newrec_.created_date, newrec_.modified_date, newrec_.rowversion;
+    COMMIT;
+  
+    rslt_ := 'TRUE';
+    attr_ := '';
+    Pack_(newrec_, attr_);
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Insert_;
+
+  PROCEDURE Pack_(rec_ IN COMPETANCY_TAB%ROWTYPE, attr_ IN OUT VARCHAR2) IS
+  BEGIN
+    System_API.Add_To_Attr('COMPETANCY_ID', rec_.competancy_id, attr_);
+    System_API.Add_To_Attr('COMP_NAME', rec_.comp_name, attr_);
+    System_API.Add_To_Attr('COMP_DESC', rec_.comp_desc, attr_);
+    System_API.Add_To_Attr('CREATED_DATE',
+                           to_char(rec_.created_date, 'dd-MM-yyyy'),
+                           attr_);
+    System_API.Add_To_Attr('MODIFIED_DATE',
+                           to_char(rec_.modified_date, 'dd-MM-yyyy'),
+                           attr_);
+    System_API.Add_To_Attr('ROWVERSION',
+                           to_char(rec_.rowversion,
+                                   'MM/DD/YYYY HH:MI:SS AM'),
+                           attr_);
+  
+  END Pack_;
+
+  PROCEDURE Modify_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_ COMPETANCY_TAB%ROWTYPE;
+  BEGIN
+    Unpack_(attr_, rec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Check_Update_(rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        Update_(attr_, rec_, rslt_);
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully Updated the competancy.';
+        END IF;
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Modify_;
+
+  PROCEDURE Check_Update_(newrec_ IN OUT COMPETANCY_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2) IS
+    oldrec_ COMPETANCY_TAB%ROWTYPE;
+  BEGIN
+    Get_(newrec_.competancy_id, oldrec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      IF newrec_.rowversion != oldrec_.rowversion THEN
+        rslt_ := 'Error: Record has been updated by another user. Please refresh the window and try again.';
+      END IF;
+      IF (Check_Comp_Name_Exist(newrec_.comp_name) = 'TRUE') THEN
+        rslt_ := 'Error: The Competency Name already Exists.';
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Update_;
+
+  PROCEDURE Get_(compId_  IN VARCHAR2,
+                 old_rec_ IN OUT COMPETANCY_TAB%ROWTYPE,
+                 rslt_    IN OUT VARCHAR2) IS
+    check_flag VARCHAR2(10);
+    CURSOR get_competancy IS
+      SELECT * FROM COMPETANCY_TAB i WHERE i.competancy_id = compId_;
+  BEGIN
+    Check_Exist_(compId_, check_flag);
+    IF check_flag = 'TRUE' THEN
+      OPEN get_competancy;
+      FETCH get_competancy
+        INTO old_rec_;
+      CLOSE get_competancy;
+      rslt_ := 'TRUE';
+    ELSE
+      rslt_ := 'Error: Cannot find the competancy id ' || compId_ || '.';
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_;
+
+  PROCEDURE Update_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY COMPETANCY_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+    newrec_.rowversion := sysdate;
+    UPDATE COMPETANCY_TAB i
+       SET ROW = newrec_
+     WHERE i.competancy_id = newrec_.competancy_id;
+    COMMIT;
+    rslt_ := 'TRUE';
+    attr_ := '';
+    Pack_(newrec_, attr_);
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Update_;
+
+  PROCEDURE Delete_(compId_ IN VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+  
+  BEGIN
+    Check_Delete_(compId_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      DELETE FROM COMPETANCY_TAB i where i.competancy_id = compId_;
+      rslt_ := 'Successfully deleted the competancy.';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Delete_;
+
+  PROCEDURE Get_Competancy(compName_     OUT VARCHAR2,
+                           compDesc_     OUT VARCHAR2,
+                           createdDate_  OUT DATE,
+                           modifiedDate_ OUT DATE,
+                           rowversion_   OUT DATE,
+                           rslt_         OUT VARCHAR2,
+                           compId_       IN VARCHAR2) IS
+    dummy number := 0;
+  
+  BEGIN
+    IF (compId_ IS NULL) THEN
+      RETURN;
+    END IF;
+    SELECT 1
+      into dummy
+      from COMPETANCY_TAB i
+     where i.competancy_id = compId_;
+  
+    if dummy = 0 then
+      raise no_data_found;
+      return;
+    end if;
+  
+    SELECT i.comp_name,
+           i.comp_desc,
+           i.created_date,
+           i.modified_date,
+           i.rowversion
+      INTO compName_, compDesc_, createdDate_, modifiedDate_, rowversion_
+      FROM COMPETANCY_TAB i
+     WHERE i.competancy_id = compId_;
+    rslt_ := 'TRUE';
+  EXCEPTION
+    WHEN no_data_found THEN
+      rslt_ := 'No data found';
+    WHEN others THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_Competancy;
+
+  FUNCTION Get_Comp_Name(compId_ IN VARCHAR2) RETURN VARCHAR2 IS
+  
+    temp_ COMPETANCY_TAB.COMP_NAME%TYPE;
+  BEGIN
+    IF (compId_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    SELECT s.comp_name
+      INTO temp_
+      FROM COMPETANCY_TAB s
+     WHERE s.competancy_id = compId_;
+    RETURN temp_;
+  EXCEPTION
+    WHEN no_data_found THEN
+      RETURN NULL;
+    
+  END Get_Comp_Name;
+
+  FUNCTION Get_Comp_Desc(compId_ IN VARCHAR2) RETURN VARCHAR2 IS
+  
+    temp_ COMPETANCY_TAB.COMP_DESC%TYPE;
+  BEGIN
+    IF (compId_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    SELECT s.comp_desc
+      INTO temp_
+      FROM COMPETANCY_TAB s
+     WHERE s.competancy_id = compId_;
+    RETURN temp_;
+  EXCEPTION
+    WHEN no_data_found THEN
+      RETURN NULL;
+    
+  END Get_Comp_Desc;
+
+  PROCEDURE Check_Delete_(compId_ IN VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+  
+    temp_ NUMBER := 0;
+  BEGIN
+  
+    Check_Exist_(compId_, rslt_);
+    IF (rslt_ = 'TRUE') THEN
+      IF (compId_ IS NULL) THEN
+        rslt_ := 'Error: Competence ID must have a value.';
+      END IF;
+      SELECT 1
+        INTO temp_
+        FROM EMP_COMPETANCY_TAB
+       WHERE COMPETANCY_ID = compId_;
+    
+      IF (temp_ IS NOT NULL) THEN
+        rslt_ := 'Error: Competency ' || Get_Comp_Name(compId_) ||
+                 ' is connected with employees and hence cannot be deleted.';
+      ELSE
+        rslt_ := 'TRUE';
+      END IF;
+    END IF;
+  END Check_Delete_;
+
+  PROCEDURE Get_Next_Line_Id(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2) IS
+  BEGIN
+    next_id_ := WFMS_COMP_ID_SEQ.NEXTVAL;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_Next_Line_Id;
+
+  FUNCTION Check_Comp_Name_Exist(comp_name_ IN VARCHAR2) RETURN VARCHAR2 IS
+  
+    tmp_  NUMBER := 0;
+    rslt_ VARCHAR2(10) := '';
+    CURSOR dup_comp_name IS
+      SELECT 1 FROM COMPETANCY_TAB WHERE comp_name = comp_name_;
+  
+  BEGIN
+  
+    OPEN dup_comp_name;
+    FETCH dup_comp_name
+      INTO tmp_;
+    IF (dup_comp_name%FOUND) THEN
+      CLOSE dup_comp_name;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE dup_comp_name;
+      rslt_ := 'FALSE';
+    END IF;
+  
+    RETURN rslt_;
+  
+  END Check_Comp_Name_Exist;
+
+end COMPETANCY_API;
+/

@@ -1,0 +1,42 @@
+-- Create table
+create table WORK_TIME_LINE_TAB
+(
+  work_time_line_id NUMBER not null,
+  work_start_time   TIMESTAMP(6),
+  work_finish_time  TIMESTAMP(6),
+  work_time_calc    NUMBER default 0 not null,
+  day_type_id       VARCHAR2(30) not null,
+  created_date      DATE default SYSDATE not null,
+  modified_date     DATE default SYSDATE not null,
+  rowversion        DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table WORK_TIME_LINE_TAB
+  add constraint WORK_TIME_LINE_TAB_PK primary key (WORK_TIME_LINE_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table WORK_TIME_LINE_TAB
+  add constraint WORK_TIME_LINE_TAB_FK foreign key (DAY_TYPE_ID)
+  references DAY_TYPE_TAB (DAY_TYPE_ID) on delete cascade;

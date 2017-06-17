@@ -1,0 +1,37 @@
+-- Create table
+create table COMPETANCY_TAB
+(
+  competancy_id VARCHAR2(20) not null,
+  comp_name     VARCHAR2(20) not null,
+  comp_desc     VARCHAR2(100),
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table COMPETANCY_TAB
+  add constraint COMPETANCY_TAB_PK primary key (COMPETANCY_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

@@ -1,0 +1,49 @@
+-- Create table
+create table COMPANY_TAB
+(
+  company_id           VARCHAR2(100) not null,
+  description          VARCHAR2(100),
+  phone_no             VARCHAR2(100),
+  auto_sch_int         NUMBER default 10 not null,
+  auto_sch_int_unit    NUMBER default 1 not null,
+  calender_id          VARCHAR2(20),
+  address_id           NUMBER,
+  created_date         DATE default SYSDATE not null,
+  modified_date        DATE default SYSDATE not null,
+  rowversion           DATE default SYSDATE not null,
+  currency_code        VARCHAR2(3),
+  default_company_flag NUMBER default 0 not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table COMPANY_TAB
+  add constraint COMPANY_TAB_PK primary key (COMPANY_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table COMPANY_TAB
+  add constraint COMPANY_TAB_FK1 foreign key (CURRENCY_CODE)
+  references CURRENCY_CODE_TAB (CURRENCY_CODE) on delete set null;
+alter table COMPANY_TAB
+  add constraint COMPANY_TAB_FK2 foreign key (CALENDER_ID)
+  references WORK_TIME_CALENDAR_TAB (CALENDAR_ID) on delete set null;

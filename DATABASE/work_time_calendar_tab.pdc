@@ -1,0 +1,39 @@
+-- Create table
+create table WORK_TIME_CALENDAR_TAB
+(
+  calendar_id   VARCHAR2(20) not null,
+  description   VARCHAR2(100),
+  valid_from    DATE not null,
+  valid_to      DATE not null,
+  status        NUMBER default 0 not null,
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table WORK_TIME_CALENDAR_TAB
+  add constraint WORK_TIME_CALENDAR_TAB_PK primary key (CALENDAR_ID)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

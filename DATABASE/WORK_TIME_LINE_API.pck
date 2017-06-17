@@ -1,0 +1,413 @@
+create or replace package WORK_TIME_LINE_API is
+
+  PROCEDURE New_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Unpack_(attr_ IN VARCHAR2,
+                    rec_  IN OUT WORK_TIME_LINE_TAB%ROWTYPE,
+                    rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Insert_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY WORK_TIME_LINE_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Pack_(rec_  IN WORK_TIME_LINE_TAB%ROWTYPE,
+                  attr_ IN OUT VARCHAR2);
+
+  PROCEDURE Modify_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Check_Update_(newrec_ IN OUT WORK_TIME_LINE_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Get_(workTimeLineId_ IN NUMBER,
+                 old_rec_        IN OUT WORK_TIME_LINE_TAB%ROWTYPE,
+                 rslt_           IN OUT VARCHAR2);
+
+  PROCEDURE Delete_(workTimeLineId_ IN NUMBER, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Update_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY WORK_TIME_LINE_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Check_Insert_(newrec_ IN OUT WORK_TIME_LINE_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Check_Exist_(workTimeLineId_ IN NUMBER, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Get_WorkTimeLines(workStartTime_  OUT TIMESTAMP,
+                              workEndTime_    OUT TIMESTAMP,
+                              workTimeCalc_   OUT NUMBER,
+                              createdDate_    OUT DATE,
+                              modifiedDate_   OUT DATE,
+                              rowversion_     OUT DATE,
+                              dayTypeId_      OUT VARCHAR2,
+                              rslt_           OUT VARCHAR2,
+                              workTimeLineId_ IN NUMBER);
+
+  PROCEDURE Get_NextLineId(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2);
+
+  FUNCTION Calc_Work_Time(workTimeLineId_ IN NUMBER) RETURN NUMBER;
+
+  FUNCTION Calculate_Work_Time(workStartTime_ IN TIMESTAMP,
+                               workEndTime_   IN TIMESTAMP) RETURN NUMBER;
+
+end WORK_TIME_LINE_API;
+/
+create or replace package body WORK_TIME_LINE_API is
+
+  PROCEDURE New_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_ WORK_TIME_LINE_TAB%ROWTYPE;
+  BEGIN
+    Unpack_(attr_, rec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Check_Insert_(rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        Insert_(attr_, rec_, rslt_);
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully saved the work time line.';
+        END IF;
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END New_;
+
+  PROCEDURE Unpack_(attr_ IN VARCHAR2,
+                    rec_  IN OUT WORK_TIME_LINE_TAB%ROWTYPE,
+                    rslt_ IN OUT VARCHAR2) IS
+    ptr_   NUMBER;
+    name_  VARCHAR2(30);
+    value_ VARCHAR2(1000);
+  BEGIN
+    WHILE (System_API.Get_Next_From_Attr(attr_, ptr_, name_, value_)) LOOP
+      rslt_ := name_;
+      IF name_ = 'WORK_TIME_LINE_ID' THEN
+        rec_.work_time_line_id := TO_NUMBER(value_);
+      ELSIF name_ = 'WORK_START_TIME' THEN
+        rec_.work_start_time := TO_TIMESTAMP(value_);
+      ELSIF name_ = 'WORK_FINISH_TIME' THEN
+        rec_.work_finish_time := TO_TIMESTAMP(value_);
+      ELSIF name_ = 'WORK_TIME_CALC' THEN
+        rec_.work_time_calc := TO_NUMBER(value_);
+      ELSIF name_ = 'DAY_TYPE_ID' THEN
+        rec_.day_type_id := value_;
+      ELSIF name_ = 'CREATED_DATE' THEN
+        rec_.created_date := TO_DATE(value_, 'dd-MM-yyyy');
+      ELSIF name_ = 'MODIFIED_DATE' THEN
+        rec_.modified_date := TO_DATE(value_, 'dd-MM-yyyy');
+      ELSIF name_ = 'ROWVERSION' THEN
+        rec_.rowversion := TO_DATE(value_, 'MM/DD/YYYY HH:MI:SS AM');
+      ELSE
+        rslt_ := 'Attr error: Unknown attribute found: ' || name_ || ' - ' ||
+                 value_;
+      END IF;
+    END LOOP;
+    rslt_ := 'TRUE';
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Unpack_;
+
+  PROCEDURE Insert_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY WORK_TIME_LINE_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+    --Get_NextLineId(newrec_.work_time_line_id, rslt_);
+    newrec_.work_time_calc := Calculate_Work_Time(newrec_.work_start_time,
+                                                  newrec_.work_finish_time);
+  
+    INSERT INTO WORK_TIME_LINE_TAB
+      (WORK_TIME_LINE_ID,
+       WORK_START_TIME,
+       WORK_FINISH_TIME,
+       WORK_TIME_CALC,
+       DAY_TYPE_ID)
+    VALUES
+      (newrec_.work_time_line_id,
+       newrec_.work_start_time,
+       newrec_.work_finish_time,
+       newrec_.work_time_calc,
+       newrec_.day_type_id)
+    RETURNING CREATED_DATE, MODIFIED_DATE, ROWVERSION INTO newrec_.created_date, newrec_.modified_date, newrec_.rowversion;
+    COMMIT;
+  
+    rslt_ := 'TRUE';
+    attr_ := '';
+    Pack_(newrec_, attr_);
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Insert_;
+
+  PROCEDURE Pack_(rec_  IN WORK_TIME_LINE_TAB%ROWTYPE,
+                  attr_ IN OUT VARCHAR2) IS
+  BEGIN
+    System_API.Add_To_Attr('WORK_TIME_LINE_ID',
+                           to_char(rec_.work_time_line_id),
+                           attr_);
+    System_API.Add_To_Attr('WORK_START_TIME',
+                           to_char(rec_.work_start_time),
+                           attr_);
+    System_API.Add_To_Attr('WORK_FINISH_TIME',
+                           to_char(rec_.work_finish_time),
+                           attr_);
+    System_API.Add_To_Attr('WORK_TIME_CALC',
+                           to_char(rec_.work_time_calc),
+                           attr_);
+    System_API.Add_To_Attr('DAY_TYPE_ID', rec_.day_type_id, attr_);
+    System_API.Add_To_Attr('CREATED_DATE',
+                           to_char(rec_.created_date, 'dd-MM-yyyy'),
+                           attr_);
+    System_API.Add_To_Attr('MODIFIED_DATE',
+                           to_char(rec_.modified_date, 'dd-MM-yyyy'),
+                           attr_);
+    System_API.Add_To_Attr('ROWVERSION',
+                           to_char(rec_.rowversion, 'dd-MM-yyyy'),
+                           attr_);
+  END Pack_;
+
+  PROCEDURE Modify_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_ WORK_TIME_LINE_TAB%ROWTYPE;
+  BEGIN
+    Unpack_(attr_, rec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Check_Update_(rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        Update_(attr_, rec_, rslt_);
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully Updated the work time line.';
+        END IF;
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Modify_;
+
+  PROCEDURE Check_Update_(newrec_ IN OUT WORK_TIME_LINE_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2) IS
+    oldrec_ WORK_TIME_LINE_TAB%ROWTYPE;
+  BEGIN
+    Get_(newrec_.work_time_line_id, oldrec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      IF newrec_.rowversion = oldrec_.rowversion THEN
+        rslt_ := 'Error: Record has been updated by another user. Please refresh the window and try again.';
+      END IF;
+    
+      --check exist for referrenced columns
+      day_type_api.Check_Exist_(newrec_.day_type_id, rslt_);
+      IF (rslt_ = 'FALSE') THEN
+        rslt_ := 'Day Type does not exist.';
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Update_;
+
+  PROCEDURE Get_(workTimeLineId_ IN NUMBER,
+                 old_rec_        IN OUT WORK_TIME_LINE_TAB%ROWTYPE,
+                 rslt_           IN OUT VARCHAR2) IS
+    check_flag VARCHAR2(10);
+    CURSOR get_line IS
+      SELECT *
+        FROM WORK_TIME_LINE_TAB i
+       WHERE i.work_time_line_id = workTimeLineId_;
+  BEGIN
+    Check_Exist_(workTimeLineId_, check_flag);
+    IF check_flag = 'TRUE' THEN
+      OPEN get_line;
+      FETCH get_line
+        INTO old_rec_;
+      CLOSE get_line;
+      rslt_ := 'TRUE';
+    ELSE
+      rslt_ := 'Error: Cannot find the work time line.';
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_;
+
+  PROCEDURE Check_Exist_(workTimeLineId_ IN NUMBER, rslt_ IN OUT VARCHAR2) IS
+    tmp_ NUMBER;
+    CURSOR chk_line IS
+      SELECT 1
+        FROM WORK_TIME_LINE_TAB i
+       WHERE i.work_time_line_id = workTimeLineId_;
+    --AND i.status != 'DELETED';
+  BEGIN
+    OPEN chk_line;
+    FETCH chk_line
+      INTO tmp_;
+    IF chk_line%FOUND THEN
+      CLOSE chk_line;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE chk_line;
+      rslt_ := 'FALSE';
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Exist_;
+
+  PROCEDURE Delete_(workTimeLineId_ IN NUMBER, rslt_ IN OUT VARCHAR2) IS
+    rec_ WORK_TIME_LINE_TAB%ROWTYPE;
+  
+  BEGIN
+    Check_Exist_(workTimeLineId_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Get_(workTimeLineId_, rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        DELETE FROM WORK_TIME_LINE_TAB
+         where WORK_TIME_LINE_ID = workTimeLineId_;
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully deleted the work time line.';
+        END IF;
+      ELSE
+        rslt_ := 'Error: Work time line has deleted. Please refresh the window.';
+      END IF;
+    ELSE
+      rslt_ := 'Error: Cannot find the work time line.';
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Delete_;
+
+  PROCEDURE Update_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY WORK_TIME_LINE_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+    newrec_.rowversion     := sysdate;
+    newrec_.work_time_calc := Calculate_Work_Time(newrec_.work_start_time,
+                                                  newrec_.work_finish_time);
+    UPDATE WORK_TIME_LINE_TAB i
+       SET ROW = newrec_
+     WHERE i.work_time_line_id = newrec_.Work_Time_Line_Id;
+    COMMIT;
+    rslt_ := 'TRUE';
+    attr_ := '';
+    Pack_(newrec_, attr_);
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Update_;
+
+  PROCEDURE Check_Insert_(newrec_ IN OUT WORK_TIME_LINE_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+    Check_Exist_(newrec_.work_time_line_id, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      rslt_ := 'Error: work time line already exists.';
+    ELSE
+      rslt_ := 'TRUE';
+    END IF;
+    IF newrec_.work_time_line_id IS NULL THEN
+      rslt_ := 'Error: Mandatory data missing.';
+    END IF;
+  
+    --check exist for referrenced columns
+    day_type_api.Check_Exist_(newrec_.day_type_id, rslt_);
+    IF (rslt_ = 'FALSE') THEN
+      rslt_ := 'Day Type does not exist.';
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Insert_;
+
+  PROCEDURE Get_WorkTimeLines(workStartTime_  OUT TIMESTAMP,
+                              workEndTime_    OUT TIMESTAMP,
+                              workTimeCalc_   OUT NUMBER,
+                              createdDate_    OUT DATE,
+                              modifiedDate_   OUT DATE,
+                              rowversion_     OUT DATE,
+                              dayTypeId_      OUT VARCHAR2,
+                              rslt_           OUT VARCHAR2,
+                              workTimeLineId_ IN NUMBER) IS
+  
+    dummy number := 0;
+    --stat_ varchar2(1000);
+  BEGIN
+    IF (dayTypeId_ IS NULL) THEN
+      RETURN;
+    END IF;
+    SELECT 1
+      into dummy
+      from WORK_TIME_LINE_TAB i
+     where i.work_time_line_id = workTimeLineId_;
+  
+    if dummy = 0 then
+      raise no_data_found;
+      return;
+    end if;
+  
+    SELECT i.work_start_time,
+           i.work_finish_time,
+           i.work_time_calc,
+           i.created_date,
+           i.modified_date,
+           i.rowversion,
+           i.day_type_id
+      INTO workStartTime_,
+           workEndTime_,
+           workTimeCalc_,
+           createdDate_,
+           modifiedDate_,
+           rowversion_,
+           dayTypeId_
+      FROM WORK_TIME_LINE_TAB i
+     WHERE i.work_time_line_id = workTimeLineId_;
+    rslt_ := 'TRUE';
+  EXCEPTION
+    WHEN no_data_found THEN
+      rslt_ := 'No data found';
+    WHEN others THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_WorkTimeLines;
+
+  PROCEDURE Get_NextLineId(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2) IS
+  BEGIN
+    next_id_ := WFMS_WORK_TIME_LINE_NO_SEQ.NEXTVAL;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Get_NextLineId;
+
+  FUNCTION Calc_Work_Time(workTimeLineId_ IN NUMBER) RETURN NUMBER IS
+    workTimeCalc_ NUMBER := 0;
+  
+    CURSOR work_time_line IS
+      SELECT WORK_START_TIME, WORK_FINISH_TIME
+        FROM WORK_TIME_LINE_TAB
+       WHERE WORK_TIME_LINE_ID = workTimeLineId_;
+  BEGIN
+    FOR rec_ IN work_time_line LOOP
+      workTimeCalc_ := (EXTRACT(HOUR FROM(rec_.work_finish_time -
+                                     rec_.work_start_time)) * 60 * 60 +
+                       EXTRACT(MINUTE FROM(rec_.work_finish_time -
+                                     rec_.work_start_time)) * 60 +
+                       EXTRACT(SECOND FROM(rec_.work_finish_time -
+                                     rec_.work_start_time))) / 60;
+      RETURN workTimeCalc_;
+    END LOOP;
+  
+  END Calc_Work_Time;
+
+  FUNCTION Calculate_Work_Time(workStartTime_ IN TIMESTAMP,
+                               workEndTime_   IN TIMESTAMP) RETURN NUMBER IS
+    workTimeCalc_ NUMBER := 0;
+  BEGIN
+    workTimeCalc_ := (EXTRACT(HOUR FROM(workEndTime_ - workStartTime_)) * 60 * 60 +
+                     EXTRACT(MINUTE FROM(workEndTime_ - workStartTime_)) * 60 +
+                     EXTRACT(SECOND FROM(workEndTime_ - workStartTime_))) / 60;
+    RETURN workTimeCalc_;
+  
+  END Calculate_Work_Time;
+
+end WORK_TIME_LINE_API;
+/

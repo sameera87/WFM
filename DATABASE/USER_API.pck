@@ -49,6 +49,13 @@ create or replace package USER_API is
                      userid_       IN VARCHAR2);
 
   FUNCTION Get_User_Type(userid_ IN VARCHAR2) RETURN VARCHAR2;
+  
+  PROCEDURE Check_Delete_(userid_ IN VARCHAR2, rslt_ IN OUT VARCHAR2);
+  
+  FUNCTION Get_Full_Name(userid_ IN VARCHAR2) RETURN VARCHAR2;
+  
+  FUNCTION User_Connected_To_Employee(userid_ IN VARCHAR2) RETURN VARCHAR2;
+    
 
 end USER_API;
 /
@@ -89,7 +96,7 @@ create or replace package body USER_API is
       IF rslt_ = 'TRUE' THEN
         Insert_(attr_, rec_, rslt_);
         IF rslt_ = 'TRUE' THEN
-          rslt_ := 'Successfully Saved the Record.';
+          rslt_ := 'Successfully Saved the user.';
         END IF;
       END IF;
     END IF;
@@ -139,7 +146,7 @@ create or replace package body USER_API is
   BEGIN
     Check_Exist(newrec_.user_id, rslt_);
     IF rslt_ = 'TRUE' THEN
-      rslt_ := 'Error: ' || newrec_.user_id || ' is already exists.';
+      rslt_ := 'Error: User ' || newrec_.user_id || ' already exists.';
     ELSE
       rslt_ := 'TRUE';
     END IF;
@@ -155,7 +162,7 @@ create or replace package body USER_API is
     tmp_ NUMBER;
     CURSOR chk_user IS
       SELECT 1 FROM USER_TAB i WHERE i.User_Id = userid_;
-    --AND i.status != 'DELETED';
+  
   BEGIN
     OPEN chk_user;
     FETCH chk_user
@@ -223,7 +230,7 @@ create or replace package body USER_API is
       IF rslt_ = 'TRUE' THEN
         Update_(attr_, rec_, rslt_);
         IF rslt_ = 'TRUE' THEN
-          rslt_ := 'Successfully Updated the Record.';
+          rslt_ := 'Successfully Updated the user.';
         END IF;
       END IF;
     END IF;
@@ -270,23 +277,14 @@ create or replace package body USER_API is
   END Get_;
 
   PROCEDURE Delete_(userid_ IN VARCHAR2, rslt_ IN OUT VARCHAR2) IS
-    rec_  USER_TAB%ROWTYPE;
-      
+  
   BEGIN
-    Check_Exist(userid_, rslt_);
-    IF rslt_ = 'TRUE' THEN
-      Get_(userid_, rec_, rslt_);
-      IF rslt_ = 'TRUE' THEN
-        DELETE FROM USER_TAB where user_id = userid_;
-        IF rslt_ = 'TRUE' THEN
-          rslt_ := 'Successfully deleted the user.';
-        END IF;
-      ELSE
-        rslt_ := 'Error: Employee record has deleted. Please refresh the window.';
-      END IF;
-    ELSE
-      rslt_ := 'Error: Cannot find the user with User ID - ' || userid_ || '.';
+    Check_Delete_(userid_, rslt_);
+    IF (rslt_ = 'TRUE') THEN
+      DELETE FROM USER_TAB where user_id = userid_;
+      rslt_ := 'Successfully deleted the user.';
     END IF;
+  
   EXCEPTION
     WHEN OTHERS THEN
       rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
@@ -317,7 +315,7 @@ create or replace package body USER_API is
                      rslt_         OUT varchar2,
                      userid_       IN VARCHAR2) IS
     dummy number := 0;
-    --stat_ varchar2(1000);
+  
   BEGIN
     IF (userid_ IS NULL) THEN
       RETURN;
@@ -333,9 +331,9 @@ create or replace package body USER_API is
            i.LAST_NAME,
            i.PASSWORD,
            i.USER_TYPE,
-           i.CREATED_DATE,
-           i.MODIFIED_DATE,
-           i.ROWVERSION
+           trunc(i.CREATED_DATE),
+           trunc(i.MODIFIED_DATE),
+           trunc(i.ROWVERSION)
       INTO firstName_,
            lastName_,
            password_,
@@ -370,6 +368,68 @@ create or replace package body USER_API is
       RETURN NULL;
     
   END Get_User_Type;
+
+  PROCEDURE Check_Delete_(userid_ IN VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+  
+    temp_ NUMBER := 0;
+  BEGIN
+  
+    Check_Exist(userid_, rslt_);
+    IF (rslt_ = 'TRUE') THEN
+      IF (userid_ IS NULL) THEN
+        rslt_ := 'Error: User ID must have a value.';
+      END IF;
+      SELECT 1 INTO temp_ FROM Employee_Tab WHERE user_id = userid_;
+    
+      IF (temp_ IS NOT NULL) THEN
+        rslt_ := 'Error: User ' || userid_ ||
+                 ' is connected to an employee and hence cannot be deleted.';
+      ELSE
+        rslt_ := 'TRUE';
+      END IF;
+    END IF;
+  
+  END Check_Delete_;
+  
+  FUNCTION Get_Full_Name(userid_ IN VARCHAR2) RETURN VARCHAR2 IS
+  
+    rec_  USER_TAB%ROWTYPE;
+    rslt_ VARCHAR2(100);
+     
+  BEGIN
+    Get_(userid_, rec_, rslt_);
+    IF (rslt_ = 'TRUE') THEN
+      rslt_ := rec_.first_name || ' ' || rec_.last_name;
+      RETURN rslt_;
+    END IF;
+  
+  END Get_Full_Name;
+  
+  
+  FUNCTION User_Connected_To_Employee(userid_ IN VARCHAR2) RETURN VARCHAR2 IS
+    
+    dummy_ NUMBER := 0;
+    rslt_ VARCHAR2(100) := '';
+    
+    CURSOR user_connected IS
+    SELECT 1
+    FROM EMPLOYEE_TAB
+    WHERE USER_ID = userid_;
+    
+  BEGIN
+    OPEN user_connected;
+    FETCH user_connected INTO dummy_;
+    IF (user_connected%FOUND) THEN
+      CLOSE user_connected;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE user_connected;
+      rslt_ := 'FALSE';
+    END IF;
+    
+    RETURN rslt_;
+    
+  END User_Connected_To_Employee;    
 
 end USER_API;
 /

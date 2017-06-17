@@ -1,0 +1,44 @@
+-- Create table
+create table DAY_TYPES_SCH_TAB
+(
+  dts_line_no   NUMBER not null,
+  schedule_id   VARCHAR2(20) not null,
+  day_type_id   VARCHAR2(20),
+  day_no        NUMBER not null,
+  created_date  DATE default SYSDATE not null,
+  modified_date DATE default SYSDATE not null,
+  rowversion    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table DAY_TYPES_SCH_TAB
+  add constraint DTS_TAB_PK primary key (DTS_LINE_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table DAY_TYPES_SCH_TAB
+  add constraint DTS_TAB_FK1 foreign key (SCHEDULE_ID)
+  references SCHEDULE_TAB (SCHEDULE_ID) on delete cascade;
+alter table DAY_TYPES_SCH_TAB
+  add constraint DTS_TAB_FK2 foreign key (DAY_TYPE_ID)
+  references DAY_TYPE_TAB (DAY_TYPE_ID) on delete cascade;
