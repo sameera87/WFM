@@ -47,25 +47,17 @@ create or replace package CUST_SLA_API is
                     rowversion_   OUT DATE,
                     rslt_         OUT VARCHAR2,
                     slaId_        IN VARCHAR2);
-
+                    
   PROCEDURE Check_Delete_(sla_id_ IN VARCHAR2, rslt_ IN OUT VARCHAR2);
-
+  
   FUNCTION Calc_Reponse_Time(sla_id_ IN VARCHAR2) RETURN NUMBER;
-
+  
   FUNCTION Calc_Resolution_Time(sla_id_ IN VARCHAR2) RETURN NUMBER;
-
+  
   FUNCTION Calc_Cut_Off_Time(sla_id_ IN VARCHAR2) RETURN NUMBER;
-
+  
   FUNCTION Get_Total_Time(hours_ IN NUMBER, mins_ IN NUMBER) RETURN NUMBER;
-
-  FUNCTION Check_Default_Sla_Exist(cust_id_ IN VARCHAR2) RETURN VARCHAR2;
-
-  FUNCTION Get_Default_Sla(cust_id_ IN VARCHAR2) RETURN VARCHAR2;
-
-  FUNCTION Get_Cust_Id(sla_id_ IN VARCHAR2) RETURN VARCHAR2;
-
-  PROCEDURE Set_Default(sla_id_ IN VARCHAR2, rslt_ IN OUT VARCHAR2);
-
+  
 end CUST_SLA_API;
 /
 create or replace package body CUST_SLA_API is
@@ -158,13 +150,6 @@ create or replace package body CUST_SLA_API is
        Get_Total_Time(newrec_.cut_off_time_h, newrec_.cut_off_time_m)) THEN
       rslt_ := 'Error: Cut off time may not be greater than the time planned on the Day Type in the Calendar ' ||
                newrec_.calendar_id || '.';
-    END IF;
-    IF ((Check_Default_Sla_Exist(newrec_.customer_id) = 'TRUE') AND newrec_.default_sla = 1) THEN
-      rslt_ := 'Error: A default SLA for the Customer ' ||
-               newrec_.customer_id || ' already exists.';
-    END IF;
-    IF (newrec_.customer_id IS NULL) THEN
-      rslt_ := 'Error: Customer ID requires a value.';
     END IF;
   
     --check exist for referrenced columns
@@ -321,13 +306,6 @@ create or replace package body CUST_SLA_API is
          Get_Total_Time(newrec_.cut_off_time_h, newrec_.cut_off_time_m)) THEN
         rslt_ := 'Error: Cut off time may not be greater than the time planned on the Day Type in the Calendar ' ||
                  newrec_.calendar_id || '.';
-      END IF;
-      IF ((Check_Default_Sla_Exist(newrec_.customer_id) = 'TRUE') AND newrec_.default_sla = 1)THEN
-        rslt_ := 'Error: A default SLA for the Customer ' ||
-                 newrec_.customer_id || ' already exists.';
-      END IF;
-      IF (newrec_.customer_id IS NULL) THEN
-        rslt_ := 'Error: Customer ID requires a value.';
       END IF;
     
       --check exist for referrenced columns
@@ -568,107 +546,6 @@ create or replace package body CUST_SLA_API is
     RETURN time_;
   
   END Get_Total_Time;
-
-  --
-  FUNCTION Check_Default_Sla_Exist(cust_id_ IN VARCHAR2) RETURN VARCHAR2 IS
-  
-    dummy_ NUMBER := 0;
-    rslt_  VARCHAR2(10) := '';
-    CURSOR default_sla_exist IS
-      SELECT 1
-        FROM CUST_SLA_TAB t
-       WHERE t.customer_id = cust_id_
-         AND t.default_sla = 1;
-  
-  BEGIN
-  
-    OPEN default_sla_exist;
-    FETCH default_sla_exist
-      INTO dummy_;
-    IF (default_sla_exist%FOUND) THEN
-      CLOSE default_sla_exist;
-      rslt_ := 'TRUE';
-    ELSE
-      CLOSE default_sla_exist;
-      rslt_ := 'FALSE';
-    END IF;
-  
-    RETURN rslt_;
-  
-  END Check_Default_Sla_Exist;
-
-  --
-  FUNCTION Get_Default_Sla(cust_id_ IN VARCHAR2) RETURN VARCHAR2 IS
-  
-    temp_ VARCHAR2(20);
-  
-  BEGIN
-  
-    IF (cust_id_ IS NULL) THEN
-      RETURN NULL;
-    END IF;
-    SELECT s.sla_id
-      INTO temp_
-      FROM CUST_SLA_TAB s
-     WHERE s.customer_id = cust_id_
-       AND s.default_sla = 1;
-    RETURN temp_;
-  
-  EXCEPTION
-    WHEN no_data_found THEN
-      RETURN NULL;
-    
-  END Get_Default_Sla;
-
-  --
-  FUNCTION Get_Cust_Id(sla_id_ IN VARCHAR2) RETURN VARCHAR2 IS
-  
-    temp_ VARCHAR2(20);
-  
-  BEGIN
-  
-    IF (sla_id_ IS NULL) THEN
-      RETURN NULL;
-    END IF;
-    SELECT s.customer_id
-      INTO temp_
-      FROM CUST_SLA_TAB s
-     WHERE s.sla_id = sla_id_;
-  
-    RETURN temp_;
-  
-  EXCEPTION
-    WHEN no_data_found THEN
-      RETURN NULL;
-    
-  END Get_Cust_Id;
-
-  --
-  PROCEDURE Set_Default(sla_id_ IN VARCHAR2, rslt_ IN OUT VARCHAR2) IS
-  
-    cust_id_    VARCHAR2(20);
-    def_sla_id_ VARCHAR2(20);
-  
-  BEGIN
-    cust_id_ := Get_Cust_Id(sla_id_);
-    IF (Check_Default_Sla_Exist(cust_id_) = 'TRUE') THEN
-      def_sla_id_ := Get_Default_Sla(cust_id_);
-      IF (sla_id_ != def_sla_id_) THEN
-        UPDATE CUST_SLA_TAB i
-           SET i.default_sla = 0
-         WHERE i.sla_id = def_sla_id_;
-        COMMIT;
-      END IF;
-    END IF;
-    UPDATE CUST_SLA_TAB i SET i.default_sla = 1 WHERE i.sla_id = sla_id_;
-    COMMIT;
-    rslt_ := 'TRUE';
-  
-  EXCEPTION
-    WHEN OTHERS THEN
-      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
-    
-  END Set_Default;
 
 end CUST_SLA_API;
 /

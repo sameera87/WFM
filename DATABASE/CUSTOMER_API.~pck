@@ -39,7 +39,6 @@ create or replace package CUSTOMER_API is
                          contactPerson_ OUT VARCHAR2,
                          addressId_     OUT NUMBER,
                          companyId_     OUT VARCHAR2,
-                         curr_          OUT VARCHAR2,
                          createdDate_   OUT DATE,
                          modifiedDate_  OUT DATE,
                          rowversion_    OUT DATE,
@@ -49,8 +48,6 @@ create or replace package CUSTOMER_API is
   PROCEDURE Check_Delete_(customer_id_ IN VARCHAR2, rslt_ IN OUT VARCHAR2);
   
   FUNCTION Is_Customer_Used(customer_id_ IN VARCHAR2) RETURN VARCHAR2;
-  
-  FUNCTION Get_Company_Currency(company_id_ IN VARCHAR2) RETURN VARCHAR2;
 
 end CUSTOMER_API;
 /
@@ -99,8 +96,6 @@ create or replace package body CUSTOMER_API is
         rec_.address_id := TO_NUMBER(value_);
       ELSIF name_ = 'COMPANY_ID' THEN
         rec_.company_id := value_;
-      ELSIF name_ = 'CURRENCY' THEN
-        rec_.currency := value_;
       ELSIF name_ = 'CREATED_DATE' THEN
         rec_.created_date := TO_DATE(value_, 'dd-MM-yyyy');
       ELSIF name_ = 'MODIFIED_DATE' THEN
@@ -120,7 +115,6 @@ create or replace package body CUSTOMER_API is
 
   PROCEDURE Check_Insert_(newrec_ IN OUT CUSTOMER_TAB%ROWTYPE,
                           rslt_   IN OUT VARCHAR2) IS
-    comp_curr_ VARCHAR2(3);
   BEGIN
     Check_Exist_(newrec_.customer_id, rslt_);
     IF rslt_ = 'TRUE' THEN
@@ -132,12 +126,6 @@ create or replace package body CUSTOMER_API is
     IF newrec_.customer_id IS NULL THEN
       rslt_ := 'Error: Customer ID cannot be Empty.';
     END IF;
-    IF (newrec_.company_id IS NOT NULL AND newrec_.currency IS NOT NULL) THEN
-      comp_curr_ := Get_Company_Currency(newrec_.company_id);
-      IF (comp_curr_ != newrec_.currency) THEN
-        rslt_ := 'Customer Currency cannot be different than the Company Currency ' || comp_curr_ || '.';
-      END IF;
-    END IF;      
   
     --check exist for referrenced columns
     IF (newrec_.company_id IS NOT NULL) THEN
@@ -188,8 +176,7 @@ create or replace package body CUSTOMER_API is
        PHONE_NO2,
        CONTACT_PERSON,
        ADDRESS_ID,
-       COMPANY_ID,
-       CURRENCY)
+       COMPANY_ID)
     VALUES
       (newrec_.customer_id,
        newrec_.description,
@@ -198,8 +185,7 @@ create or replace package body CUSTOMER_API is
        newrec_.phone_no2,
        newrec_.contact_person,
        newrec_.address_id,
-       newrec_.company_id,
-       newrec_.currency)
+       newrec_.company_id)
     RETURNING CREATED_DATE, MODIFIED_DATE, ROWVERSION INTO newrec_.created_date, newrec_.modified_date, newrec_.rowversion;
     COMMIT;
   
@@ -221,7 +207,6 @@ create or replace package body CUSTOMER_API is
     System_API.Add_To_Attr('CONTACT_PERSON', rec_.contact_person, attr_);
     System_API.Add_To_Attr('ADDRESS_ID', to_char(rec_.address_id), attr_);
     System_API.Add_To_Attr('COMPANY_ID', rec_.company_id, attr_);
-    System_API.Add_To_Attr('CURRENCY', rec_.currency, attr_);
     System_API.Add_To_Attr('CREATED_DATE',
                            to_char(rec_.created_date, 'dd-MM-yyyy'),
                            attr_);
@@ -256,19 +241,12 @@ create or replace package body CUSTOMER_API is
   PROCEDURE Check_Update_(newrec_ IN OUT CUSTOMER_TAB%ROWTYPE,
                           rslt_   IN OUT VARCHAR2) IS
     oldrec_ CUSTOMER_TAB%ROWTYPE;
-    comp_curr_ VARCHAR2(3);
   BEGIN
     Get_(newrec_.customer_id, oldrec_, rslt_);
     IF rslt_ = 'TRUE' THEN
       IF newrec_.rowversion != oldrec_.rowversion THEN
         rslt_ := 'Error: Record has been updated by another user. Please refresh the window and try again.';
       END IF;
-      IF (newrec_.company_id IS NOT NULL AND newrec_.currency IS NOT NULL) THEN
-        comp_curr_ := Get_Company_Currency(newrec_.company_id);
-        IF (comp_curr_ != newrec_.currency) THEN
-          rslt_ := 'Customer Currency cannot be different than the Company Currency ' || comp_curr_ || '.';
-        END IF;
-      END IF; 
     
       --check exist for referrenced columns
       IF (newrec_.company_id IS NOT NULL) THEN
@@ -349,7 +327,6 @@ create or replace package body CUSTOMER_API is
                          contactPerson_ OUT VARCHAR2,
                          addressId_     OUT NUMBER,
                          companyId_     OUT VARCHAR2,
-                         curr_          OUT VARCHAR2,
                          createdDate_   OUT DATE,
                          modifiedDate_  OUT DATE,
                          rowversion_    OUT DATE,
@@ -378,7 +355,6 @@ create or replace package body CUSTOMER_API is
            i.contact_person,
            i.address_id,
            i.company_id,
-           i.currency,
            i.created_date,
            i.modified_date,
            i.rowversion
@@ -389,7 +365,6 @@ create or replace package body CUSTOMER_API is
            contactPerson_,
            addressId_,
            companyId_,
-           curr_,
            createdDate_,
            modifiedDate_,
            rowversion_
@@ -461,21 +436,6 @@ create or replace package body CUSTOMER_API is
     END IF;
     
   END Check_Delete_;
-  
-  
-  FUNCTION Get_Company_Currency(company_id_ IN VARCHAR2) RETURN VARCHAR2 IS
-    
-    curr_ VARCHAR2(3) :=  '';
-    
-  BEGIN
-    IF (company_id_ IS NOT NULL) THEN
-      curr_ := company_api.Company_Curr_Code(company_id_);
-    END IF;
-    RETURN curr_;
-  
-  END Get_Company_Currency; 
-      
-
 
 end CUSTOMER_API;
 /

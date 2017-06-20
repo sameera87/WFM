@@ -159,13 +159,13 @@ create or replace package body COMPANY_API is
     IF (newrec_.auto_sch_int <= 0) THEN
       rslt_ := 'Error: Auto Schedule Interval cannnot be 0 or less than 0.';
     END IF;
-    IF (work_time_calendar_api.Is_Cal_Valid(newrec_.calendar_id,
+    IF (work_time_calendar_api.Is_Cal_Valid(newrec_.calender_id,
                                             newrec_.created_date) =
        'FALSE') THEN
       rslt_ := 'Error: Calendar is invalid for ' || newrec_.created_date;
     END IF;
-    IF (work_time_calendar_api.Get_Cal_Status(newrec_.calendar_id) NOT IN (1)) THEN
-      rslt_ := 'Error: The Calendar ' || newrec_.calendar_id ||
+    IF (work_time_calendar_api.Get_Cal_Status(newrec_.calender_id) NOT IN (1)) THEN
+      rslt_ := 'Error: The Calendar ' || newrec_.calender_id ||
                'is not Active.';
     END IF;
   
@@ -330,13 +330,13 @@ create or replace package body COMPANY_API is
       IF (newrec_.auto_sch_int <= 0) THEN
         rslt_ := 'Error: Auto Schedule Interval cannnot be 0 or less than 0.';
       END IF;
-      IF (work_time_calendar_api.Is_Cal_Valid(newrec_.calendar_id,
+      IF (work_time_calendar_api.Is_Cal_Valid(newrec_.calender_id,
                                               newrec_.created_date) =
          'FALSE') THEN
         rslt_ := 'Error: Calendar is invalid for ' || newrec_.created_date;
       END IF;
-      IF (work_time_calendar_api.Get_Cal_Status(newrec_.calendar_id) NOT IN (1)) THEN
-        rslt_ := 'Error: The Calendar ' || newrec_.calendar_id ||
+      IF (work_time_calendar_api.Get_Cal_Status(newrec_.calender_id) NOT IN (1)) THEN
+        rslt_ := 'Error: The Calendar ' || newrec_.calender_id ||
                  'is not Active.';
       END IF;
       IF (newrec_.default_company_flag = 1 AND count_ != 1) THEN

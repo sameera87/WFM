@@ -11,8 +11,7 @@ create table CUSTOMER_TAB
   company_id     VARCHAR2(20),
   created_date   DATE default SYSDATE not null,
   modified_date  DATE default SYSDATE not null,
-  rowversion     DATE default SYSDATE not null,
-  currency       VARCHAR2(3)
+  rowversion     DATE default SYSDATE not null
 )
 tablespace SYSTEM
   pctfree 10

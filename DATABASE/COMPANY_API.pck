@@ -190,6 +190,23 @@ create or replace package body COMPANY_API is
       rslt_                        := 'TRUE';
     END IF;
   
+    --check exist for referrenced columns
+    IF (newrec_.currency_code IS NOT NULL) THEN
+      currency_code_api.Check_Exist_(newrec_.currency_code, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: Currency Code does not exist.';
+      END IF;
+    END IF;
+    IF (newrec_.calender_id IS NOT NULL) THEN
+      work_time_calendar_api.Check_Exist_(newrec_.calender_id, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: Calendar does not exist.';
+      END IF;
+    END IF;
+    /*IF (newrec_.address_id IS NOT NULL) THEN
+      --ADDRESS_API check exist method neeed to added here.
+    END IF;*/
+  
   EXCEPTION
     WHEN OTHERS THEN
       rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
@@ -354,6 +371,23 @@ create or replace package body COMPANY_API is
         newrec_.default_company_flag := 1;
         rslt_                        := 'TRUE';
       END IF;
+    
+      --check exist for referrenced columns
+      IF (newrec_.currency_code IS NOT NULL) THEN
+        currency_code_api.Check_Exist_(newrec_.currency_code, rslt_);
+        IF rslt_ = 'FALSE' THEN
+          rslt_ := 'Error: Currency Code does not exist.';
+        END IF;
+      END IF;
+      IF (newrec_.calender_id IS NOT NULL) THEN
+        work_time_calendar_api.Check_Exist_(newrec_.calender_id, rslt_);
+        IF rslt_ = 'FALSE' THEN
+          rslt_ := 'Error: Calendar does not exist.';
+        END IF;
+      END IF;
+      /*IF (newrec_.address_id IS NOT NULL) THEN
+        --ADDRESS_API check exist method neeed to added here.
+      END IF;*/
     
     END IF;
   

@@ -1,0 +1,489 @@
+create or replace package SAL_PER_EMP_API is
+
+  PROCEDURE New_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Unpack_(attr_ IN VARCHAR2,
+                    rec_  IN OUT SAL_PER_EMP_TAB%ROWTYPE,
+                    rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Insert_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY SAL_PER_EMP_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Pack_(rec_ IN SAL_PER_EMP_TAB%ROWTYPE, attr_ IN OUT VARCHAR2);
+
+  PROCEDURE Modify_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Check_Update_(newrec_ IN OUT SAL_PER_EMP_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Get_(line_no_ IN NUMBER,
+                 old_rec_ IN OUT SAL_PER_EMP_TAB%ROWTYPE,
+                 rslt_    IN OUT VARCHAR2);
+
+  PROCEDURE Delete_(line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Update_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY SAL_PER_EMP_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Check_Insert_(newrec_ IN OUT SAL_PER_EMP_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2);
+
+  PROCEDURE Check_Exist_(line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2);
+
+  PROCEDURE Get_Emp_Salary(emp_id_       OUT VARCHAR2,
+                           year_         OUT NUMBER,
+                           month_        OUT NUMBER,
+                           net_salary_   OUT NUMBER,
+                           createdDate_  OUT DATE,
+                           modifiedDate_ OUT DATE,
+                           rowversion_   OUT DATE,
+                           rslt_         OUT VARCHAR2,
+                           line_no_      IN NUMBER);
+
+  PROCEDURE Get_Next_Line_Id(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2);
+
+  FUNCTION Check_Sal_Line_Exist(emp_id_ IN VARCHAR2,
+                                year_   IN NUMBER,
+                                month_  IN NUMBER) RETURN VARCHAR2;
+
+  FUNCTION Get_Emp_Salary_Amt(emp_id_ IN VARCHAR2,
+                              year_   IN NUMBER,
+                              month_  IN NUMBER DEFAULT NULL) RETURN NUMBER;
+
+end SAL_PER_EMP_API;
+/
+create or replace package body SAL_PER_EMP_API is
+
+  PROCEDURE New_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_ SAL_PER_EMP_TAB%ROWTYPE;
+  BEGIN
+    Unpack_(attr_, rec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Check_Insert_(rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        Insert_(attr_, rec_, rslt_);
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully saved the employee salary.';
+        END IF;
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END New_;
+
+  PROCEDURE Unpack_(attr_ IN VARCHAR2,
+                    rec_  IN OUT SAL_PER_EMP_TAB%ROWTYPE,
+                    rslt_ IN OUT VARCHAR2) IS
+    ptr_   NUMBER;
+    name_  VARCHAR2(30);
+    value_ VARCHAR2(1000);
+  BEGIN
+    WHILE (System_API.Get_Next_From_Attr(attr_, ptr_, name_, value_)) LOOP
+      rslt_ := name_;
+      IF name_ = 'SAL_LINE_NO' THEN
+        rec_.sal_line_no := TO_NUMBER(value_);
+      ELSIF name_ = 'YEAR' THEN
+        rec_.year := TO_NUMBER(value_);
+      ELSIF name_ = 'MONTH' THEN
+        rec_.month := TO_NUMBER(value_);
+      ELSIF name_ = 'NET_SALARY' THEN
+        rec_.net_salary := TO_NUMBER(value_);
+      ELSIF name_ = 'EMPLOYEE_ID' THEN
+        rec_.employee_id := value_;
+      ELSIF name_ = 'CREATED_DATE' THEN
+        rec_.created_date := TO_DATE(value_, 'dd-MM-yyyy');
+      ELSIF name_ = 'MODIFIED_DATE' THEN
+        rec_.modified_date := TO_DATE(value_, 'dd-MM-yyyy');
+      ELSIF name_ = 'ROWVERSION' THEN
+        rec_.rowversion := TO_DATE(value_, 'MM/DD/YYYY HH:MI:SS AM');
+      ELSE
+        rslt_ := 'Attr error: Unknown attribute found: ' || name_ || ' - ' ||
+                 value_;
+      END IF;
+    END LOOP;
+    rslt_ := 'TRUE';
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Unpack_;
+
+  PROCEDURE Check_Insert_(newrec_ IN OUT SAL_PER_EMP_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+    Check_Exist_(newrec_.sal_line_no, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      rslt_ := 'Error: Salary Line No already exists.';
+    ELSE
+      rslt_ := 'TRUE';
+    END IF;
+    IF (newrec_.sal_line_no IS NULL) THEN
+      rslt_ := 'Error: Salary Line No cannot be null.';
+    END IF;
+    IF (newrec_.net_salary < 0 OR newrec_.net_salary IS NULL) THEN
+      rslt_ := 'Error: Net Salary cannot be null or negative.';
+    END IF;
+    IF (newrec_.year IS NOT NULL AND newrec_.year NOT BETWEEN 0001 AND 9999) THEN
+      rslt_ := 'Error: Invalid Year entered.';
+    END IF;
+    IF (newrec_.Month IS NOT NULL AND newrec_.Month NOT BETWEEN 01 AND 12) THEN
+      rslt_ := 'Error: Invalid Month entered.';
+    END IF;
+    IF (Check_Sal_Line_Exist(newrec_.employee_id,
+                             newrec_.year,
+                             newrec_.month) = 'TRUE') THEN
+      rslt_ := 'Error: Salary line already exists for the Employee ' ||
+               newrec_.employee_id || ' for the year ' || newrec_.year ||
+               ' and month ' || newrec_.month || '.';
+    END IF;
+  
+    --check exist for referrenced columns
+    IF (newrec_.employee_id IS NOT NULL) THEN
+      employee_api.Check_Exist_(newrec_.employee_id, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: Employee does not exist.';
+      END IF;
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Insert_;
+
+  PROCEDURE Check_Exist_(line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2) IS
+  
+    tmp_ NUMBER;
+    CURSOR emp_payment_exist IS
+      SELECT 1 FROM SAL_PER_EMP_TAB i WHERE i.sal_line_no = line_no_;
+  
+  BEGIN
+  
+    OPEN emp_payment_exist;
+    FETCH emp_payment_exist
+      INTO tmp_;
+    IF emp_payment_exist%FOUND THEN
+      CLOSE emp_payment_exist;
+      rslt_ := 'TRUE';
+    ELSE
+      CLOSE emp_payment_exist;
+      rslt_ := 'FALSE';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Check_Exist_;
+
+  PROCEDURE Insert_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY SAL_PER_EMP_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2) IS
+  BEGIN
+  
+    INSERT INTO SAL_PER_EMP_TAB
+      (SAL_LINE_NO, EMPLOYEE_ID, YEAR, MONTH, NET_SALARY)
+    VALUES
+      (newrec_.sal_line_no,
+       newrec_.employee_id,
+       newrec_.year,
+       newrec_.month,
+       newrec_.net_salary)
+    RETURNING CREATED_DATE, MODIFIED_DATE, ROWVERSION INTO newrec_.created_date, newrec_.modified_date, newrec_.rowversion;
+    COMMIT;
+  
+    rslt_ := 'TRUE';
+    attr_ := '';
+    Pack_(newrec_, attr_);
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+    
+  END Insert_;
+
+  PROCEDURE Pack_(rec_ IN SAL_PER_EMP_TAB%ROWTYPE, attr_ IN OUT VARCHAR2) IS
+  BEGIN
+    System_API.Add_To_Attr('SAL_LINE_NO', to_char(rec_.sal_line_no), attr_);
+    System_API.Add_To_Attr('YEAR', to_char(rec_.year), attr_);
+    System_API.Add_To_Attr('MONTH', to_char(rec_.month), attr_);
+    System_API.Add_To_Attr('NET_SALARY', to_char(rec_.net_salary), attr_);
+    System_API.Add_To_Attr('EMPLOYEE_ID', rec_.employee_id, attr_);
+    System_API.Add_To_Attr('CREATED_DATE',
+                           to_char(rec_.created_date, 'dd-MM-yyyy'),
+                           attr_);
+    System_API.Add_To_Attr('MODIFIED_DATE',
+                           to_char(rec_.modified_date, 'dd-MM-yyyy'),
+                           attr_);
+    System_API.Add_To_Attr('ROWVERSION',
+                           to_char(rec_.rowversion,
+                                   'MM/DD/YYYY HH:MI:SS AM'),
+                           attr_);
+  
+  END Pack_;
+
+  PROCEDURE Modify_(attr_ IN OUT VARCHAR2, rslt_ IN OUT VARCHAR2) IS
+    rec_ SAL_PER_EMP_TAB%ROWTYPE;
+  BEGIN
+    Unpack_(attr_, rec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      Check_Update_(rec_, rslt_);
+      IF rslt_ = 'TRUE' THEN
+        Update_(attr_, rec_, rslt_);
+        IF rslt_ = 'TRUE' THEN
+          rslt_ := 'Successfully Updated the employee salary.';
+        END IF;
+      END IF;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Modify_;
+
+  PROCEDURE Check_Update_(newrec_ IN OUT SAL_PER_EMP_TAB%ROWTYPE,
+                          rslt_   IN OUT VARCHAR2) IS
+    oldrec_ SAL_PER_EMP_TAB%ROWTYPE;
+  BEGIN
+    Get_(newrec_.sal_line_no, oldrec_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      IF newrec_.rowversion != oldrec_.rowversion THEN
+        rslt_ := 'Error: Record has been updated by another user. Please refresh the window and try again.';
+      END IF;
+      IF (newrec_.net_salary < 0 OR newrec_.net_salary IS NULL) THEN
+        rslt_ := 'Error: Net Salary cannot be null or negative.';
+      END IF;
+      IF (newrec_.year IS NOT NULL AND newrec_.year NOT BETWEEN 0001 AND 9999) THEN
+        rslt_ := 'Error: Invalid Year entered.';
+      END IF;
+      IF (newrec_.Month IS NOT NULL AND newrec_.Month NOT BETWEEN 01 AND 12) THEN
+        rslt_ := 'Error: Invalid Month entered.';
+      END IF;
+      IF (Check_Sal_Line_Exist(newrec_.employee_id,
+                             newrec_.year,
+                             newrec_.month) = 'TRUE') THEN
+      rslt_ := 'Error: Salary line already exists for the Employee ' ||
+               newrec_.employee_id || ' for the year ' || newrec_.year ||
+               ' and month ' || newrec_.month || '.';
+      END IF;
+    
+      --check exist for referrenced columns
+      IF (newrec_.employee_id IS NOT NULL) THEN
+        employee_api.Check_Exist_(newrec_.employee_id, rslt_);
+        IF rslt_ = 'FALSE' THEN
+          rslt_ := 'Error: Employee does not exist.';
+        END IF;
+      END IF;
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+    
+  END Check_Update_;
+
+  PROCEDURE Get_(line_no_ IN NUMBER,
+                 old_rec_ IN OUT SAL_PER_EMP_TAB%ROWTYPE,
+                 rslt_    IN OUT VARCHAR2) IS
+  
+    check_flag VARCHAR2(10);
+    CURSOR get_emp_salary IS
+      SELECT * FROM SAL_PER_EMP_TAB i WHERE i.sal_line_no = line_no_;
+  
+  BEGIN
+  
+    Check_Exist_(line_no_, check_flag);
+    IF check_flag = 'TRUE' THEN
+      OPEN get_emp_salary;
+      FETCH get_emp_salary
+        INTO old_rec_;
+      CLOSE get_emp_salary;
+      rslt_ := 'TRUE';
+    ELSE
+      rslt_ := 'Error: Cannot find the salary data of employee ' ||
+               old_rec_.employee_id || '.';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+    
+  END Get_;
+
+  PROCEDURE Update_(attr_   OUT VARCHAR2,
+                    newrec_ IN OUT NOCOPY SAL_PER_EMP_TAB%ROWTYPE,
+                    rslt_   IN OUT VARCHAR2) IS
+  
+  BEGIN
+  
+    newrec_.rowversion := sysdate;
+    UPDATE SAL_PER_EMP_TAB i
+       SET ROW = newrec_
+     WHERE i.sal_line_no = newrec_.sal_line_no;
+    COMMIT;
+  
+    rslt_ := 'TRUE';
+    attr_ := '';
+    Pack_(newrec_, attr_);
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+    
+  END Update_;
+
+  PROCEDURE Delete_(line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2) IS
+  
+  BEGIN
+    Check_Exist_(line_no_, rslt_);
+    IF rslt_ = 'TRUE' THEN
+      DELETE FROM SAL_PER_EMP_TAB i where i.sal_line_no = line_no_;
+      rslt_ := 'Successfully deleted the salary data of employee.';
+    END IF;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+  END Delete_;
+
+  PROCEDURE Get_Emp_Salary(emp_id_       OUT VARCHAR2,
+                           year_         OUT NUMBER,
+                           month_        OUT NUMBER,
+                           net_salary_   OUT NUMBER,
+                           createdDate_  OUT DATE,
+                           modifiedDate_ OUT DATE,
+                           rowversion_   OUT DATE,
+                           rslt_         OUT VARCHAR2,
+                           line_no_      IN NUMBER) IS
+  
+    dummy number := 0;
+  
+  BEGIN
+    IF (line_no_ IS NULL) THEN
+      RETURN;
+    END IF;
+  
+    SELECT 1
+      into dummy
+      from SAL_PER_EMP_TAB i
+     where i.sal_line_no = line_no_;
+  
+    if dummy = 0 then
+      raise no_data_found;
+      return;
+    end if;
+  
+    SELECT i.sal_line_no,
+           i.year,
+           i.month,
+           i.net_salary,
+           i.created_date,
+           i.modified_date,
+           i.rowversion
+      INTO emp_id_,
+           year_,
+           month_,
+           net_salary_,
+           createdDate_,
+           modifiedDate_,
+           rowversion_
+      FROM SAL_PER_EMP_TAB i
+     WHERE i.sal_line_no = line_no_;
+    rslt_ := 'TRUE';
+  
+  EXCEPTION
+    WHEN no_data_found THEN
+      rslt_ := 'No data found';
+    WHEN others THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+    
+  END Get_Emp_Salary;
+
+  PROCEDURE Get_Next_Line_Id(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2) IS
+  
+  BEGIN
+  
+    next_id_ := WFMS_EMP_SAL_LINE_NO_SEQ.NEXTVAL;
+  
+  EXCEPTION
+    WHEN OTHERS THEN
+      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
+    
+  END Get_Next_Line_Id;
+
+  FUNCTION Check_Sal_Line_Exist(emp_id_ IN VARCHAR2,
+                                year_   IN NUMBER,
+                                month_  IN NUMBER) RETURN VARCHAR2 IS
+  
+    temp_ NUMBER := 0;
+    rslt_ VARCHAR2(5) := 'FALSE';
+    CURSOR sal_line_exist IS
+      SELECT 1
+        FROM SAL_PER_EMP_TAB T
+       WHERE T.EMPLOYEE_ID = emp_id_
+         AND T.YEAR = year_
+         AND t.month = month_;
+  
+  BEGIN
+    IF (emp_id_ IS NULL OR year_ IS NULL OR month_ IS NULL) THEN
+      RETURN rslt_;
+    ELSE
+      OPEN sal_line_exist;
+      FETCH sal_line_exist
+        INTO temp_;
+      IF sal_line_exist%FOUND THEN
+        CLOSE sal_line_exist;
+        rslt_ := 'TRUE';
+      ELSE
+        CLOSE sal_line_exist;
+        rslt_ := 'FALSE';
+      END IF;
+    END IF;
+  
+    RETURN rslt_;
+  
+  END Check_Sal_Line_Exist;
+  
+  FUNCTION Get_Emp_Salary_Amt(emp_id_ IN VARCHAR2,
+                              year_   IN NUMBER,
+                              month_  IN NUMBER DEFAULT NULL) RETURN NUMBER IS
+    sal_ NUMBER := 0;
+    CURSOR annual_salary IS
+    SELECT net_salary
+    FROM SAL_PER_EMP_TAB
+    WHERE EMPLOYEE_ID = emp_id_
+    AND YEAR = year_;
+    
+    CURSOR month_salary IS
+    SELECT net_salary
+    FROM SAL_PER_EMP_TAB 
+    WHERE EMPLOYEE_ID = emp_id_
+    AND YEAR = year_
+    AND month = month_;    
+    
+  BEGIN
+    IF (emp_id_ IS NULL OR year_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    
+    IF (emp_id_ IS NOT NULL AND year_ IS NOT NULL AND month_ IS NULL) THEN
+      FOR rec_ IN annual_salary LOOP
+        sal_ := sal_ + rec_.net_salary;
+      END LOOP;
+    END IF;
+    
+    IF (emp_id_ IS NOT NULL AND year_ IS NOT NULL AND month_ IS NOT NULL) THEN
+      OPEN month_salary;
+      FETCH month_salary INTO sal_;
+      IF month_salary%FOUND THEN
+        CLOSE month_salary;
+        RETURN sal_;
+      ELSE
+        CLOSE month_salary;
+        RETURN NULL;
+      END IF;
+    END IF;
+    
+  END Get_Emp_Salary_Amt;
+
+end SAL_PER_EMP_API;
+/

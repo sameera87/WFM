@@ -1,0 +1,41 @@
+-- Create table
+create table SAL_PER_EMP_TAB
+(
+  SAL_LINE_NO   NUMBER not null,
+  EMPLOYEE_ID   VARCHAR2(20) not null,
+  YEAR          NUMBER not null,
+  MONTH         NUMBER not null,
+  CREATED_DATE  DATE default SYSDATE not null,
+  MODIFIED_DATE DATE default SYSDATE not null,
+  ROWVERSION    DATE default SYSDATE not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table SAL_PER_EMP_TAB
+  add constraint SAL_PER_EMP_PK primary key (SAL_LINE_NO)
+  using index 
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table SAL_PER_EMP_TAB
+  add constraint SAL_PER_EMP_FK1 foreign key (EMPLOYEE_ID)
+  references EMPLOYEE_TAB (EMPLOYEE_ID) on delete cascade;

@@ -47,8 +47,6 @@ create or replace package SALARY_INFO_API is
                              
   PROCEDURE Check_Delete_(salaryId_ IN NUMBER, rslt_ IN OUT VARCHAR2);
   
-  PROCEDURE Get_Next_Line_Id(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2);
-  
   FUNCTION Get_Emp_Id(salary_id_ IN NUMBER) RETURN VARCHAR2;
   
   FUNCTION Check_Emp_Sal_Info_Exist(emp_id_ IN VARCHAR2) RETURN VARCHAR2;
@@ -580,18 +578,6 @@ create or replace package body SALARY_INFO_API is
     RETURN net_sal_;
   
   END Calc_Net_Salary;
-  
-  PROCEDURE Get_Next_Line_Id(next_id_ OUT NUMBER, rslt_ OUT VARCHAR2) IS
-    
-  BEGIN
-    
-    next_id_ := wfms_salary_id_seq.NEXTVAL;
-    
-  EXCEPTION
-    WHEN OTHERS THEN
-      rslt_ := 'Error: ' || SQLCODE || ' - ' || SQLERRM;
-      
-  END Get_Next_Line_Id;
 
 end SALARY_INFO_API;
 /

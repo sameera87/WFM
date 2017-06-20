@@ -614,7 +614,7 @@ create or replace package body EMPLOYEE_API is
 
   FUNCTION Get_Emp_Address_Id(employeeId_ IN VARCHAR2) RETURN NUMBER IS
   
-    add_no_ Employee_Tab.ADDRESS_ID%TYPE;
+    add_no_ Employee_Tab.Emp_Address_Id%TYPE;
   BEGIN
     IF (employeeId_ IS NULL) THEN
       RETURN NULL;

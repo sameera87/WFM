@@ -66,6 +66,8 @@ create or replace package EMPLOYEE_API is
   FUNCTION Get_Employee_Company(employeeId_ IN VARCHAR2) RETURN VARCHAR2;
   
   FUNCTION Get_Emp_Address_Id(employeeId_ IN VARCHAR2) RETURN NUMBER;
+  
+  FUNCTION Get_Emp_Calendar_Id(employeeId_ IN VARCHAR2) RETURN VARCHAR2;
 
 end EMPLOYEE_API;
 /
@@ -178,6 +180,29 @@ create or replace package body EMPLOYEE_API is
                'is already connected to an employee.';
     END IF;
     Validate_items_(newrec_, rslt_);
+  
+    --check exist for referrenced columns
+    IF (newrec_.company_id IS NOT NULL) THEN
+      company_api.Check_Exist(newrec_.company_id, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: Company does not exist.';
+      END IF;
+    END IF;
+    IF (newrec_.calendar_id IS NOT NULL) THEN
+      work_time_calendar_api.Check_Exist_(newrec_.calendar_id, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: Calendar does not exist.';
+      END IF;
+    END IF;
+    IF (newrec_.user_id IS NOT NULL) THEN
+      user_api.Check_Exist(newrec_.user_id, rslt_);
+      IF rslt_ = 'FALSE' THEN
+        rslt_ := 'Error: User does not exist.';
+      END IF;
+    END IF;
+    /* IF (newrec_.emp_address_id IS NOT NULL) THEN
+      --address_api check exist for employee neede to added here.
+    END IF;*/
   
   EXCEPTION
     WHEN OTHERS THEN
@@ -346,6 +371,30 @@ create or replace package body EMPLOYEE_API is
                  'is already connected to an employee.';
       END IF;
       Validate_items_(newrec_, rslt_);
+    
+      --check exist for referrenced columns
+      IF (newrec_.company_id IS NOT NULL) THEN
+        company_api.Check_Exist(newrec_.company_id, rslt_);
+        IF rslt_ = 'FALSE' THEN
+          rslt_ := 'Error: Company does not exist.';
+        END IF;
+      END IF;
+      IF (newrec_.calendar_id IS NOT NULL) THEN
+        work_time_calendar_api.Check_Exist_(newrec_.calendar_id, rslt_);
+        IF rslt_ = 'FALSE' THEN
+          rslt_ := 'Error: Calendar does not exist.';
+        END IF;
+      END IF;
+      IF (newrec_.user_id IS NOT NULL) THEN
+        user_api.Check_Exist(newrec_.user_id, rslt_);
+        IF rslt_ = 'FALSE' THEN
+          rslt_ := 'Error: User does not exist.';
+        END IF;
+      END IF;
+      /*IF (newrec_.emp_address_id IS NOT NULL) THEN
+        --address_api check exist for employee neede to added here.
+      END IF;*/
+    
     END IF;
   EXCEPTION
     WHEN OTHERS THEN
@@ -629,6 +678,25 @@ create or replace package body EMPLOYEE_API is
       RETURN NULL;
     
   END Get_Emp_Address_Id;
+
+  FUNCTION Get_Emp_Calendar_Id(employeeId_ IN VARCHAR2) RETURN VARCHAR2 IS
+
+    cal_id_ Employee_Tab.Calendar_Id%TYPE;
+  BEGIN
+    IF (employeeId_ IS NULL) THEN
+      RETURN NULL;
+    END IF;
+    SELECT CALENDAR_ID
+      INTO cal_id_
+      FROM Employee_Tab
+     WHERE employee_id = employeeId_;
+    RETURN cal_id_;
+    
+  EXCEPTION
+    WHEN no_data_found THEN
+      RETURN NULL;
+  
+  END Get_Emp_Calendar_Id;
 
 end EMPLOYEE_API;
 /

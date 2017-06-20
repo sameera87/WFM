@@ -48,6 +48,8 @@ create or replace package SCH_PER_CALENDAR_API is
   FUNCTION Overlapping_Schedule_Exist(cal_id_ IN VARCHAR2,day_ IN DATE) RETURN VARCHAR2;
   
   PROCEDURE Check_Delete_(spc_line_no_ IN NUMBER, rslt_ IN OUT VARCHAR2);
+  
+  FUNCTION Get_Applied_Day_Type(cal_id_ IN VARCHAR2, date_ IN DATE) RETURN VARCHAR2;
 
 end SCH_PER_CALENDAR_API;
 /
@@ -442,6 +444,39 @@ create or replace package body SCH_PER_CALENDAR_API is
     END IF;
   
   END Check_Delete_;
+
+  --
+  FUNCTION Get_Applied_Day_Type(cal_id_ IN VARCHAR2, date_ IN DATE)
+    RETURN VARCHAR2 IS
+  
+    day_no_ NUMBER;
+    day_type_ VARCHAR2(20);
+    
+    CURSOR get_day_type IS
+      SELECT DAY_TYPE_ID
+        FROM DAY_TYPES_SCH_TAB
+       WHERE day_no = day_no_
+         AND SCHEDULE_ID IN
+             (SELECT schedule_id
+                FROM SCH_PER_CALENDAR_TAB
+               WHERE Calendar_Id = cal_id_
+                 AND date_ BETWEEN START_DATE AND END_DATE);
+  
+  BEGIN
+  
+    SELECT to_number(to_char(sysdate, 'D')) INTO day_no_ FROM dual;
+    
+    OPEN get_day_type;
+    FETCH get_day_type INTO day_type_;
+    IF get_day_type%FOUND THEN
+      CLOSE get_day_type;
+      RETURN day_type_;
+    ELSE
+      CLOSE get_day_type;
+      RETURN NULL;
+    END IF;
+  
+  END Get_Applied_Day_Type;
 
 end SCH_PER_CALENDAR_API;
 /
